@@ -1,0 +1,244 @@
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>{% block title %}Titulo de plataforma{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <link rel="shortcut icon" href="{{ asset('images/icono.png') }}">
+    {% block stylesheets %}
+        {# google fonts #}<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600">
+        {# bootstrap #}<link rel="stylesheet"   href="{{ asset('bower_components/bootstrap/css/bootstrap.min.css') }}" />
+        {# Themify icons #}<link rel="stylesheet" href="{{ asset('assets/icon/themify-icons/themify-icons.css') }}" />
+        {# Font Awesome #}<link rel="stylesheet" type="text/css" href="{{ asset('bower_components/fontawesome-6.5.1/css/all.min.css') }}">
+        {# Datatables #}<link rel="stylesheet" href="{{ asset('assets/datatable/css/plugins/dataTables.bootstrap4.min.css') }}" />
+        {# Icofont #}{#<link rel="stylesheet" type="text/css" href="{{ asset('assets/icon/icofont/css/icofont.css') }}"> #}
+        {# Sweet Alert #}<link rel="stylesheet" type="text/css" href="{{ asset('bower_components/sweetalert/css/sweetalert.css') }}">
+        {# Jquery Chosen <link rel="stylesheet" href="{{ asset('bower_components/chosen/chosen.min.css') }}" /> #}
+        {# select2 #}<link rel="stylesheet" href="{{ asset('bower_components/select2/css/select2.min.css') }}" />
+        <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/style.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/jquery.mCustomScrollbar.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/pcoded-horizontal.min.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/component.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ asset('bower_components/pnotify/css/pnotify.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ asset('bower_components/pnotify/css/pnotify.brighttheme.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ asset('bower_components/pnotify/css/pnotify.buttons.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ asset('bower_components/pnotify/css/pnotify.history.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ asset('bower_components/pnotify/css/pnotify.mobile.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ asset('assets/pages/pnotify/notify.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/datatable/css/plugins/PNotifyBrightTheme.css') }}" />
+        {# Modal custom #}<link rel="stylesheet" type="text/css" href="{{ asset('css/modal.css') }}">
+        {# full calendar css #}        
+            {# Core #}<link rel="stylesheet" href="{{asset('bower_components/fullcalendar4.4.2/core/main.css')}}">            
+            {# Daygrid plugin #}<link rel="stylesheet" href="{{asset('bower_components/fullcalendar4.4.2/daygrid/main.css')}}">           
+            {# Timegrid plugin #}<link rel="stylesheet" href="{{asset('bower_components/fullcalendar4.4.2/timegrid/main.css')}}">
+            {# List plugin #}<link rel="stylesheet" href="{{asset('bower_components/fullcalendar4.4.2/list/main.css')}}">
+        {# end fullcalendar css #}
+       
+        {# css para sobre escribir estilos por defecto #}<link rel="stylesheet" href="{{ asset('css/overwrite.css') }}">
+        
+    {% endblock %}
+    
+</head>
+<!-- Menu horizontal static layout -->
+
+<body>
+<!-- Pre-loader start -->
+<div class="theme-loader">
+    <div class="loader-track">
+        <div class="loader-bar"></div>
+    </div>
+</div>
+<!-- Pre-loader end -->
+
+<div id="pcoded" class="pcoded">
+
+    <div class="pcoded-container">
+        <nav class="navbar header-navbar pcoded-header">
+            <div class="navbar-wrapper">
+                <div class="navbar-logo">
+                    <a class="mobile-menu" id="mobile-collapse" href="#!">
+                        <i class="ti-menu"></i>
+                    </a>
+                    <a href="">
+                        <img class="img-fluid" src="{{ asset('images/logo.png') }}" alt="" />
+                    </a>
+                    <a class="mobile-options">
+                        <i class="ti-more"></i>
+                    </a>
+                </div>
+                <div class="navbar-container container-fluid">
+                    <ul class="nav-left">
+                        <li>
+                            <div class="sidebar_toggle"><a href="javascript:void(0)"><i class="ti-menu"></i></a></div>
+                        </li>
+                        <li class="header-search">
+                            <div class="main-search morphsearch-search">
+                                <div class="input-group">
+                                    <span class="input-group-addon search-close"><i class="ti-close"></i></span>
+                                    <input type="text" class="form-control">
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <a href="#!" onclick="javascript:toggleFullScreen()">
+                                <i class="ti-fullscreen"></i>
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <ul class="nav-right">
+                        <li class="user-profile header-notification">
+                            <a href="#!">
+                                <img src="{{ asset('images/4.png') }}" class="img-radius" alt="User-Profile-Image">
+                                {% if app.user %}
+                                    <span>{{app.user.nombre}}&nbsp;{{app.user.apellido}}<i style="font-size:smaller;">({{app.user.email}})</i> </span> 
+                                {% else %}
+                                    <span style="color:crimson">ERROR  - No se pudo identificar al usuario</span>
+                                {% endif %}
+                                <i class="ti-angle-down"></i>
+                            </a>
+                            <ul class="show-notification profile-notification">
+                                <li>
+                                    <a href="{{ path('app_usuario_pefil')}}">
+                                            <i class="ti-user"></i> Editar perfil
+                                    </a>
+                                </li>
+                                <li>
+                                    
+                                    <a href="{{ path('app_logout')}}">
+                                        <i class="ti-layout-sidebar-left"></i> Salir
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- Sidebar chat start -->
+        <div id="sidebar" class="users p-chat-user showChat">
+            <div class="had-container">
+                <div class="card card_main p-fixed users-main">
+                    <div class="user-box">
+                        <div class="chat-search-box">
+                            <a class="back_friendlist">
+                                <i class="fa fa-chevron-left"></i>
+                            </a>
+                            <div class="right-icon-control">
+                                <input type="text" class="form-control  search-text" placeholder="Search Friend" id="search-friends">
+                                <div class="form-icon">
+                                    <i class="fa fa-search"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="pcoded-main-container">
+
+          {# seccion para filtrar menu por id de roles, opcional
+            {% if app.user.rol.id == 1 %}
+                {{ include('menu/menu_admin.html.twig')}}
+            {% endif %}
+            {% if app.user.rol.id == 2 %}
+                {{ include('menu/menu_operador.html.twig')}}
+            {% endif %}
+            #}
+            {{ include("modal.html.twig")}}
+            {{ include("menu/root.html.twig")}}
+            <div class="pcoded-wrapper">
+                <div class="pcoded-content">
+                    <div class="pcoded-inner-content">
+                        <div class="main-body">
+
+                            {% block content %}
+                                {% block body %}{% endblock %}
+                            {% endblock content %}
+
+                            <div id="styleSelector"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    {% block javascripts %}
+        {# Jquery #}<script src="{{ asset('bower_components/jquery/js/jquery.min.js') }}"></script>
+        {# Jquery UI #}<script src="{{ asset('bower_components/jquery-ui/js/jquery-ui.min.js') }}"></script>
+        {# Popper #}<script src="{{ asset('bower_components/popper.js/js/popper.min.js') }}"></script>
+        {# Bootstrap #}<script src="{{ asset('bower_components/bootstrap/js/bootstrap.min.js') }}"></script>
+        {# Jquery Slim scroll #}<script src="{{ asset('bower_components/jquery-slimscroll/js/jquery.slimscroll.js') }}"></script>
+        {# Modernizer #}<script src="{{ asset('bower_components/modernizr/js/modernizr.js') }}"></script>
+        {# Jquery Chosen <script src="{{ asset('bower_components/chosen/chosen.jquery.min.js')}}"></script> #}
+        {# Jquery Datatables #}<script src="{{ asset('assets/datatable/js/plugins/jquery.dataTables.min.js') }}"></script>
+        {# Jquery Datatables for BS4 #}<script src="{{ asset('assets/datatable/js/plugins/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('bower_components/modernizr/js/css-scrollbars.js') }}"></script>
+        <script src="{{ asset('assets/js/classie.js') }}"></script>
+        <script src="{{ asset('assets/js/pcoded.min.js') }}"></script>
+        <script src="{{ asset('assets/js/vertical/horizontal-layout.min.js') }}"></script>
+        <script src="{{ asset('assets/js/jquery.mCustomScrollbar.concat.min.js') }}"></script>
+        <script src="{{ asset('assets/js/script.js') }}"></script>
+        {# Jquery Nestable #}<script src="{{ asset('assets/pages/nestable/jquery.nestable.js') }}"></script>
+        {# Sweet Alert #}<script src="{{ asset('bower_components/sweetalert/js/sweetalert.min.js') }}"></script>
+        <script src="{{ asset('bower_components/pnotify/js/pnotify.js') }}"></script>
+        <script src="{{ asset('bower_components/pnotify/js/pnotify.desktop.js') }}"></script>
+        <script src="{{ asset('bower_components/pnotify/js/pnotify.confirm.js') }}"></script>
+        <script src="{{ asset('bower_components/pnotify/js/pnotify.callbacks.js') }}"></script>
+        <script src="{{ asset('bower_components/pnotify/js/pnotify.animate.js') }}"></script>
+        <script src="{{ asset('bower_components/pnotify/js/pnotify.history.js') }}"></script>
+        <script src="{{ asset('bower_components/pnotify/js/pnotify.mobile.js') }}"></script>
+        <script src="{{ asset('bower_components/pnotify/js/pnotify.nonblock.js') }}"></script>
+        <script src="{{ asset('assets/pages/pnotify/notify.js') }}"></script>
+        <script src="{{ asset('assets/js/pcoded.min.js') }}"></script>
+        <script src="{{ asset('assets/datatable/js/pages/data-basic-custom.js') }}"></script>
+        {# Font Awesome #}<script src="{{ asset('bower_components/fontawesome-6.5.1/js/all.min.js') }}"></script>
+        {# Modal custom #}<script src="{{ asset('js/modalActions.js') }}"></script>
+        {# select2 #}<script src="{{ asset('bower_components/select2/js/select2.js') }}" ></script>
+        {# ag-grid #}<script src="{{ asset('bower_components/ag-grid/ag-grid-community.min.js') }}"></script>
+
+         {# fullcalendar js #}
+             {# Core #}<script src="{{asset('bower_components/fullcalendar4.4.2/core/main.js')}}"></script>
+             {# Common Resources #}<script src="{{asset('bower_components/fullcalendar4.4.2/resource-common/main.js')}}"></script>
+             {# Interaction plugin #}<script src="{{asset('bower_components/fullcalendar4.4.2/interaction/main.js')}}"></script>
+             {# Daygrid plugin #}<script src="{{asset('bower_components/fullcalendar4.4.2/daygrid/main.js')}}"></script>
+             {# Timegrid plugin #}<script src="{{asset('bower_components/fullcalendar4.4.2/timegrid/main.js')}}"></script>             
+             {# List plugin #}<script src="{{asset('bower_components/fullcalendar4.4.2/list/main.js')}}"></script>
+        {# end fullcalendar js #}
+        
+        {# script que ejecuta los flash msg al cargarlos #}
+        <script>
+            $( document ).ready(function() {
+                {% for label, messages in app.flashes %}
+                new PNotify({
+                    {% for message in messages %}
+                    type:'{{ label }}',
+                    text: '<span style="font-size: 1.5em;">{{ message }}</span>',
+                    textTrusted: true,
+                    {% if label=="success" %}
+                    title: 'OK',
+                    {% endif %}
+                    {% if label=="error" %}
+                    title: 'Error'  ,
+                    {% endif %}
+                    delay: 4000,
+
+                    {% endfor %}
+                });
+                {% endfor %}
+            });
+            $(".modalClose").on("click", function(){
+                modalFadeOut();
+            });
+        </script>
+        {#################################################}
+        
+
+    {% endblock %}
+</body>
+</html>

@@ -1,0 +1,47 @@
+
+    <div class="pcoded-inner-navbar">
+           
+            <div class="pcoded-navigation-label">Menú de Navegación</div>
+            <ul class="pcoded-item pcoded-left-item">
+                <li class="pcoded-hasmenu">
+                    <a href="{{ path('app_index')}}">
+                        <span class="pcoded-micon"><i class="fa-solid fa-house"></i><b>Inicio</b></span>
+                        <span class="pcoded-mtext">Inicio</span>
+                        <span class="pcoded-mcaret"></span>
+                    </a>
+                </li>
+            </ul>
+            
+            {% set arrayRoles = app.user.fetchRoles() %}
+            {% if 'ROLE_SUPER_ADMIN' in arrayRoles %}
+                {% include 'menu/superadmin.html.twig' %}
+                {# {% include 'menu/admin.html.twig' %}
+                {% include 'menu/dependencia.html.twig' %}
+                {% include 'menu/contabilidad.html.twig'%}
+                {% include 'menu/liquidaciones.html.twig' %}
+                {% include 'menu/tesoreria.html.twig' %}
+                {% include 'menu/fragmentoConsultas.html.twig' %} #}
+            {% endif %}
+            {% if 'ROLE_ADMIN' in arrayRoles %}    
+                {% include 'menu/admin.html.twig' %}  
+                {% include 'menu/dependencia.html.twig' %}
+                {% include 'menu/contabilidad.html.twig'%}
+                {% include 'menu/liquidaciones.html.twig' %}
+                {% include 'menu/tesoreria.html.twig' %}
+                {% include 'menu/fragmentoConsultas.html.twig' %}
+            {% endif %}
+            {% if 'ROLE_LIQUIDACIONES' in arrayRoles %}
+                {% include 'menu/liquidaciones.html.twig' %}
+            {% endif %}
+            {% if 'ROLE_CONTABLE' in arrayRoles %}
+                {% include 'menu/contabilidad.html.twig'%}
+            {% endif %}
+            {% if 'ROLE_DEPENDENCIA' in arrayRoles %}
+                {% include 'menu/dependencia.html.twig' %}
+            {% endif %}
+            {% if 'ROLE_TESORERIA' in arrayRoles %}
+                {% include 'menu/tesoreria.html.twig' %}
+            {% endif %}
+       
+    </div>
+

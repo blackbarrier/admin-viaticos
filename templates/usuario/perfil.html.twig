@@ -1,0 +1,204 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Viáticos - Mis datos de Usuario{% endblock %}
+
+{% block stylesheets %}
+    {{parent()}}
+    <style>
+        h4{
+            color:#009aae;
+            font-weight:bold;
+            padding:1em;
+        }
+        h4 > b {
+            color:royalblue;
+        }
+        .table{
+            width:fit-content;
+            min-width:800px;
+            max-width:80%;
+            margin: 0 auto;
+            box-shadow: 0px 3px 5px lightgray;
+            border-radius:8px;
+            margin-top:1em;
+            margin-bottom:1em;
+            padding:1em;            
+        }
+        .table tbody > tr > th{
+            background:royalblue;
+            color:white;
+            border:1px solid royalblue;
+        }
+        .table tbody > tr > td{
+            border:1px solid royalblue;
+        }
+        .row{
+            margin:1em;
+        }
+        .fomt-control > input{
+            width:100%;
+        }
+        .flexColumn{
+            display:flex;
+            flex-direction:column;
+            row-gap:1em;
+        }
+        .flexColumn .row{
+            width:100%;
+        }
+        .flexRow{
+            display:flex;
+            flex-direction:row;
+            column-gap:1em;
+        }
+        .centeredFlex{
+            align-items:center;
+            justify-content:center;
+        }
+        .grouped{
+            filter: drop-shadow(2px 2px 3px gray);
+            width:100%;
+        }
+        table{
+            filter: drop-shadow(0px 1px 3px grey);
+            border-radius:12px;
+        }
+        td{
+            border-bottom:1px solid #009aae;            
+            border-top: 1px solid #009aae;
+            text-align:center;
+            background:white;
+        }
+        th{
+            border-bottom:1px solid white;
+            border-top: 1px solid white;
+        }
+    </style>
+{% endblock %}
+{% block body %}
+<div class="card" style="padding:2em; width:fit-content; margin:auto auto; margin-top:4em; min-width:40vw; display:flex; flex-direction:column; row-gap:1em; justify-content:space-around; align-items:center;">
+        <h4><img src="{{ asset('images/4.png') }}" class="img-radius" alt="User-Profile-Image" style="width:2em;"> Mis datos de usuario</h4>
+        <div class="container-fluid col-md-12 flexColumn" style="row-gap:0.4em;">
+            <table>
+                <tr>
+                    <th class="col-md-3 p-2 bg-primary">DNI</th>
+                    <td class="col p-2">{{usuario.dni}}</td>
+                </tr>
+                <tr>
+                    <th class="col-md-3 p-2 bg-primary">Cuil</th>
+                    <td class="col p-2">{{usuario.cuil}}</td>
+                </tr>
+                <tr>
+                    <th class="col-md-3 p-2 bg-primary">Nombre</th>
+                    <td class="col p-2">{{usuario.nombre|raw}}</td>
+                </tr>
+                <tr>
+                    <th class="col-md-3 p-2 bg-primary">Apellido</th>
+                    <td class="col p-2">{{usuario.apellido|raw}}</td>
+                </tr>
+                <tr>
+                    <th class="col-md-3 p-2 bg-primary">Género</th>
+                    <td class="col p-2">{{usuario.genero.nombre|raw}}</td>
+                </tr>
+                <tr>
+                    <th class="col-md-3 p-2 bg-primary">Roles</th>
+                    <td class="col p-3" style="display:flex; flex-direction:column; row-gap:1em; align-items:center; justify-content:space-evenly;">
+                        <label>
+                       {% set arrayRoles = usuario.fetchRoles() %}
+                            {% for rol in arrayRoles %}
+                                <b style="padding:5px; border:1px solid #009aae; color:#009aae; filter:drop-shadow(0px 1px 3px lightgray); border-radius:20px;">{{rol.descripcion}}</b>
+                            {% endfor %}
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="col-md-3 p-2 bg-primary">Dependencia</th>
+                    <td class="col p-2">{{usuario.dependencia.nombre|raw}}</td>
+                </tr>
+                <tr>
+                    <th class="col-md-3 p-2 bg-primary">Repartición</th>
+                    <td class="col p-2">{{usuario.reparticion.nombre|raw}}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="row">
+                    <span style="display:flex; flex-direction:row; column-gap:1em;align-items:center; justify-content:space-between;  padding:1em;">
+                        <span class="btn btn-success" id="perfil_Cotnraseña" onClick="openPassChanger()" style="color:white;"><i class="ti-reload"></i>&nbsp; Cambiar contraseña</span>
+                    </span>
+                    </div>
+    
+{% endblock %}
+{% block javascripts %}
+{{parent()}}
+    <script>
+        function openPassChanger(){
+            event.preventDefault();
+            modalClear();
+            modalSetTitle("Cambio de contraseña");
+            modalLoadContent("<table>"+
+                                "<tr>"+
+                                    "<th style='min-width:250px; text-align:left; padding:1em;'>Contraseña nueva</th>"+
+                                    "<td><input type='password' class='form-control' style='min-width:500px; width:fit-content;' id='contraseñaNueva1' placeholder='Ingrese la nueva contraseña'></td>"+
+                                "</tr>"+
+                                "<tr>"+
+                                    "<th style='min-width:250px; text-align:left; padding:1em;'>Repita la Contraseña nueva</th>"+
+                                    "<td><input type='password' class='form-control' style='min-width:500px; width:fit-content;' id='contraseñaNueva2' placeholder='vuelva a ingresar la nueva contraseña'></td>"+
+                                "</tr>"+
+                                "<tr>"+
+                                    "<th style='min-width:250px; text-align:left; padding:1em;'>Contraseña actual</th>"+
+                                    "<td><input type='password' class='form-control' style='min-width:500px; width:fit-content;' id='contraseñaActual' placeholder='Ingrese la contraseña actual'></td>"+
+                                "</tr>"+
+                            "</table>"+
+                            "<div class='flexRow centeredFlex'>"+
+                                "<button class='btn btn-success' onClick='confirmChange()'><i class='ti-save'></i>&nbsp;Confirmar</button>"+
+                            "</div>"
+            );
+            modalFadeIn();
+        }
+        function confirmChange(){
+            var nuevaContra1 = $("#contraseñaNueva1").val();
+            var nuevaContra2 = $("#contraseñaNueva2").val();
+            var contraActual = $("#contraseñaActual").val();
+            if($("#contraseñaNueva1").val() === "" || $("#contraseñaNueva2").val() === "" || $("#contraseñaActual").val() === ""){
+                modalClear();
+                modalSetTitle("Error");
+                modalLoadContent("<h4> Debe llenar todos los campos para continuar.</h4>");
+            }else{               
+                if(nuevaContra1 != nuevaContra2){
+                    setTimeout(() => {
+                        modalSetTitle("Error");
+                        modalLoadContent("<h4>Las contraseñas nuevas ingresadas no coinciden</h4>");
+                        modalFadeIn();
+                    }, 1000);
+                }else{
+                    modalSetTitle("¿Esta seguro/a de querer continuar?");
+                    modalLoadContent("<div class='flexColumn centeredFlex'>"+
+                                        "<h5>Los cambios se verán reflejados en su próxima sesión</h5>"+
+                                        "<button class='btn btn-inverse btn-inverse-jag btn-outline-inverse' id='ultimaConfirmacion'>"+
+                                            "<i class='ti-check'></i>&nbsp;Cambiar contraseña"+
+                                        "</button>"+
+                                    "</div>");
+                    $("#ultimaConfirmacion").on("click",function(){
+                        $.ajax({
+                            type: "POST",
+                            url: "{{ path('app_change_pass')}}",
+                            data: {"nuevaContra":nuevaContra2,"contraActual":contraActual},
+                            dataType: "Json",
+                            success: function (response) {
+                                    modalSetTitle("Resultado de la operación");
+                                    modalLoadContent("<div class='flexColumn centeredFlex'>"+
+                                                            "<h4>"+response.resultado+"</h4>"+
+                                                    "</div>"
+                                    );
+                            }
+                        });
+                    });                     
+                }
+            }            
+        }
+        setTimeout(() => {
+            $("select").chosen();
+        }, 500);
+       
+    </script>
+{% endblock %}

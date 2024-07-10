@@ -1,0 +1,118 @@
+.selector-toggle {
+    display:none;
+}
+.card{
+    overflow:auto;
+}
+
+/* bootstrap */
+.page-item.active .page-link {
+    background-color: #000;
+    border-color: #AAA;
+}
+.dropdown-item:active{
+    background-color: #000;
+}
+.dropdown-primary .dropdown-menu a:hover{
+    background-color:#000;
+}
+
+/* Override select2 */
+.select2-container--default .select2-search__field:focus {
+    border: 1px solid dimgray;
+}
+
+.select2-container .select2-selection--single {
+    height: 36px;
+}
+
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: dimgray;
+}
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: dimgray;
+    color: white;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    background-color: white;
+    color: black;
+    padding: .2rem .75rem;
+    
+}
+
+.select2-selection__rendered:focus {
+    transition: 0.5s;
+    border: 1px solid blue;  
+    
+}
+.section-title-flex{
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.btn-inverse-jag {
+    border-color: #222;
+}
+
+
+/** FullCalendar y CalendarioManager */
+.fc th {
+    background: #ffffff;
+    color: black;
+    border-color: #ddd;
+}
+
+:root {
+    --color-bg-feriado: hsla(112, 0%, 66%, 1); /* BGC_FERIADO */
+    --color-bg-feriado-hover: hsla(112, 0%, 56%, 1);
+    --color-feriado: #000000; /* C_FERIADO */
+    --color-bg-viaticom: hsl(218, 51%, 85%, 1); /* BGC_VIATICOM */
+    --color-bg-viaticom-hover: hsl(218, 51%, 75%,1); /* BGC_VIATICOM */
+    --color-br-viaticom: hsla(112, 0%, 66%, 1); /* BC_VIATICOM */
+
+    --color-bg-rendicion: hsla(112, 23%, 66%, 1); /* BGC_VIATICOP */
+    --color-bg-rendicion-hover: hsla(112, 23%, 56%, 1); /* BGC_VIATICOP */
+    --color-br-rendicion: hsla(112, 23%, 36%, 1); /* BC_VIATICOP */
+    --color-viatico: #009aae;
+  }
+
+
+
+/** AgGrid */
+.ag-theme-jag {
+    --ag-active-color: darkgray;
+    --ag-background-color: white;
+    --ag-foreground-color: indigo;
+    --ag-border-color: color-mix(in srgb, transparent, var(--ag-foreground-color) 15%);
+    --ag-secondary-border-color: var(--ag-border-color);
+    --ag-header-background-color: color-mix(in srgb, var(--ag-background-color), var(--ag-foreground-color) 2%);
+    --ag-tooltip-background-color: var(--ag-header-background-color);
+    --ag-control-panel-background-color: var(--ag-header-background-color);
+}
+
+
+/** Datatable */
+table.dataTable tbody>tr.selected, table.dataTable tbody>tr>.selected {
+    background-color: red;
+    color: #fff;
+}
+
+
+/** left menu */
+.disable-item {
+    color: #e1e7e9
+}
+
+.td-overflow {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: initial;
+}
+
+
+

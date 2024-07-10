@@ -1,0 +1,230 @@
+{% extends "base.html.twig"%}
+{% block title%}Viaticos Digitales - Inicio{% endblock %}
+{% block stylesheets %}
+    {{parent()}}
+
+    <style>
+        .faltanDatos {
+            background-color: #faedcc84;
+        }
+    </style>
+{% endblock %}
+
+
+{% block body %}
+    <div class="card" >
+        <div class="card-header">
+            <h3 >Viáticos para autorizar {{dependencia}}</h3>
+            <p class="text-muted h6 m-b-10 mt-3">Inpeccionar, autorizar y definir circuito administrativo</p>
+        </div>
+        <br>
+        <div class="card-block">
+        {% if viaticos %}
+            <table class="table table-hover" id="miTabla"  >
+                <thead>
+                    <tr>
+                        <th scope="col"><input id="seleccionar_todos" style="margin-left:20px" type="checkbox"></th>
+                        <th scope="col">Nro&nbsp;</th>                                
+                        {# <th>Legajo</th> #}
+                        <th scope="col">CUIL</th>
+                        <th scope="col">Agente</th>
+                        <th scope="col">Cat</th>
+                        <th scope="col">Mes</th>
+                        <th scope="col">Alta</th>
+                        <th scope="col">Mod</th>
+                        <th scope="col">150%</th>
+                        <th scope="col">100%</th>
+                        <th scope="col">70%</th>
+                        <th scope="col">50%</th>
+                        <th scope="col">40%</th>
+                        <th scope="col">20%</th>
+                        <th scope="col">Mov.</th>
+                        <th scope="col">Total</th>                      
+                        {# <th scope="col">Aut</th> #}
+                        <th scope="col">Anticipo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for viatico in viaticos %}
+                        {% if viatico.agente.numeroCuenta is null or viatico.agente.cbu1 is null or viatico.agente.cbu2 is null%}
+                        <!--<tr  style="background-color: #faedcc84;" >-->
+                        <tr>
+                        {% else %}
+                        <tr>
+                        {% endif %}
+
+                        <td scope="row"></td>
+                        <td scope="row">{{viatico.id}}</td>                        
+                        <td scope="row">{{viatico.agente.cuil}}</td>
+                        <td scope="row">{{viatico.agente.apellido}}, {{viatico.agente.nombre}}</td>
+                        <td scope="row">{{viatico.agente.categoria}}</td>
+                        <td scope="row">{{viatico.mes}}/{{viatico.anio}}</td>
+                        <td scope="row">{{viatico.fechaPedido|date('Y/m/d H:i:s')}}</td>
+                        <td scope="row">${{viatico.modulo}}</td>
+                        <td scope="row">{{viatico.dias150}}</td>
+                        <td scope="row">{{viatico.dias100}}</td>
+                        <td scope="row">{{viatico.dias70}}</td>
+                        <td scope="row">{{viatico.dias50}}</td>
+                        <td scope="row">{{viatico.dias40}}</td>
+                        <td scope="row">{{viatico.dias20}}</td>
+                        <td scope="row">{{viatico.diasmov}}</td>
+                        <td scope="row">{{viatico.importe}}</td>                        
+                        {# <td scope="row"><input type="checkbox" class="autorizado" name="autorizado" id="{{viatico.id}}"></td> #}
+                        <td scope="row"><input type="checkbox" class="anticipo" name="anticipo_{{viatico.id}}" id="anticipo_{{viatico.id}}"></td>
+                        
+                    </tr>
+                    {% endfor %}
+                </tbody>
+               
+            </table>   
+        </div>
+                <div style="margin: auto;">
+                    <form action="{{ path('app_contable_aprobar') }}" method="POST" id="aprobacionForm">
+                        <input type="hidden" id="arrayAutorizados" name="arrayAutorizados">
+                        <input type="hidden" id="arrayAnticipos" name="arrayAnticipos">
+                        <button class="btn btn-inverse btn-inverse-jag btn-outline-inverse" type="submit" id="autorizar_viaticos"><i class="fa fa-check-square"></i>&nbsp;Autorizar</button>
+                    </form>
+                </div>
+                <br>
+
+            {% else %}
+            <div class="row p-5">
+                <div class="col-sm-12">
+                    <h4 style="color:#009aae; text-align:center">No se encontraron viáticos recientes</h4>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+
+
+
+
+{% endblock %}
+
+{% block javascripts %}
+    {{parent()}}
+    <script>
+
+        // @see https://stackoverflow.com/questions/42570465/datatables-select-all-checkbox
+        // @see https://datatables.net/forums/discussion/53372/bug-in-select-plugin-when-showing-checkboxes
+        // @see https://datatables.net/forums/discussion/comment/143528/#Comment_143528
+
+        var bandeja = null;
+        var arrayAutorizados = []; // Array para almacenar los IDs de los checkboxes marcados
+        $(document).ready(function () {
+            bandeja = $('#miTabla').DataTable({
+                select: {
+                    style: 'multi',
+                    selector: 'td:first-child'
+                },
+                columnDefs: [{
+                    orderable: false,
+                    className: 'select-checkbox',
+                    targets: 0                   
+                }],
+                order: [[2, "desc"]],
+                searching: true,
+                columns: [
+                    {'data': 'seleccion', 'orderable': false},
+                    {'data': 'id', 'orderable': true},
+                    {'data': 'cuil', 'orderable': true, sClass: 'text-center'},
+                    {'data': 'agente', 'orderable': true, sClass: 'text-center'},
+                    {'data': 'categoria',  sClass: 'text-center'},
+                    {'data': 'mes',  sClass: 'text-center'},
+                    {'data': 'alta', sClass: 'text-center'},
+                    {'data': 'modulo', sClass: 'text-center'},
+                    {'data': 'dias150', sClass: 'text-center'},
+                    {'data': 'dias100', sClass: 'text-center'},
+                    {'data': 'dias70', sClass: 'text-center'},
+                    {'data': 'dias50', sClass: 'text-center'},                    
+                    {'data': 'dias40', sClass: 'text-center'},
+                    {'data': 'dias20', sClass: 'text-center'},
+                    {'data': 'mov', sClass: 'text-center'},
+                    {'data': 'importe', sClass: 'text-center'},
+                    {'data': 'anticipo', 'orderable': false},
+                ],
+                autoWidth: true,
+                paging:false,
+                language: {
+                    "sProcessing": "Procesando...",
+                    "sLengthMenu": "Mostrar _MENU_ viaticos",
+                    "sZeroRecords": "No se encontraron resultados",
+                    "sEmptyTable": "Ningún dato disponible en esta tabla",
+                    "sInfo": "Mostrando viaticos del _START_ al _END_ de un total de _TOTAL_ viaticos",
+                    "sInfoEmpty": "Mostrando viaticos del 0 al 0 de un total de 0 viaticos",
+                    "sInfoFiltered": "(filtrado de un total de _MAX_ viaticos)",
+                    "sInfoPostFix": "",
+                    "sSearch": "Buscar:",
+                    "sUrl": "",
+                    "sInfoThousands": ",",
+                    "sLoadingRecords": "Cargando...",
+                    "oPaginate": {
+                        "sFirst": "Primero",
+                        "sLast": "Último",
+                        "sNext": "Siguiente",
+                        "sPrevious": "Anterior"
+                    },
+                    oAria: {
+                        "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                        "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                    }
+                }
+            });
+
+        /**
+        * @see https://stackoverflow.com/questions/42570465/datatables-select-all-checkbox
+        */
+        bandeja.on("click", "#seleccionar_todos", function(event) {
+            let checkbox = event.target;
+            if(checkbox.checked) {
+                bandeja.rows().select();                
+            } else {
+                bandeja.rows().deselect();                
+            }                
+        });
+
+        }, 500); 
+
+
+        
+        
+    
+    /**
+    * Obtiene un array de solicitudes seleccionadas para autorizar.
+    * cada elemento es un par [id,anticipo].
+    * id es la solicitud para autorizar y anticipo es un flag indicando el flujo administrativo
+    */
+    function obtenerSeleccionados(datatable) {
+        let result = [];
+        datatable.rows( { selected: true } ).data().each( function (row) {
+            let rowElem = document.getElementById("anticipo_"+row.id);
+            if(rowElem != null) {                       
+                let data = {
+                    id: row.id,
+                    anticipo: rowElem.checked
+                };
+                result.push(data);
+            }
+        });        
+        return result;
+    }
+
+   
+    //Marca los autorizados y los envia
+    document.addEventListener('DOMContentLoaded', function () {
+        //Boton Agregar agentes
+        document.getElementById('autorizar_viaticos').addEventListener('click', function (event) {            
+            
+            
+            event.preventDefault(); // quitar esta lenae para permitir el submit
+            arrayAutorizados = obtenerSeleccionados(bandeja);
+            var hiddenElement = document.getElementById('arrayAutorizados');
+            hiddenElement.value = (JSON.stringify(arrayAutorizados));
+            console.log(arrayAutorizados);                                
+        });
+    });
+    
+    </script>
+
+{% endblock %}

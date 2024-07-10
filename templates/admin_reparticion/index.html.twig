@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Plantilla index{% endblock %}
+
+{% block stylesheets %}
+{{parent()}}
+{% endblock %}
+
+
+{% block body %}
+    <div id="loaderB"></div>
+    <div class="card" style="overflow:auto">
+    
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-10">
+                    <h3><i class="fa fa-institution"></i>&nbsp; <b>Administración de reparticiones</b></h3>
+                    <p class="text-muted h6 m-b-10 mt-3">Se muestran todas las reparticiones disponibles</p>
+                </div>
+                <div class="col-sm-2">
+                    <a href="{{path('app_info_reparticion_new')}}"><button
+                            class="btn btn-inverse btn-inverse-jag btn-inverse-jag btn-outline-inverse"
+                            style="width: 100%;">
+                            <i class="fa fa-institution"></i>&nbsp;+ Crear repartición</button></a>
+                </div>    
+            </div>
+        </div>
+    
+        <br>
+
+        <div class="card-block">
+            
+            <table class="table table-hover" id="miTabla">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Nombre</th>
+                        <th>Abreviatura</th>
+                        {# <th>Cuit</th>
+                        <th>Rotulo</th>
+                        <th>Sucursal</th>
+                        <th>NumeroCuenta</th>
+                        <th>Digito</th>
+                        <th>Cbu</th>
+                        <th>EstadoReparticionId</th>
+                        <th>Externa</th> #}
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for info_reparticion in info_reparticions %}
+                    <tr>
+                        <td>{{ info_reparticion.id }}</td>
+                        <td>{{ info_reparticion.nombre }}</td>
+                        <td>{{ info_reparticion.abreviatura }}</td>
+                        {# <td>{{ info_reparticion.cuit }}</td>
+                        <td>{{ info_reparticion.rotulo }}</td>
+                        <td>{{ info_reparticion.sucursal }}</td>
+                        <td>{{ info_reparticion.numeroCuenta }}</td>
+                        <td>{{ info_reparticion.digito }}</td>
+                        <td>{{ info_reparticion.cbu }}</td>
+                        <td>{{ info_reparticion.estadoReparticionId }}</td>
+                        <td>{{ info_reparticion.externa ? 'Yes' : 'No' }}</td> #}
+                        <td>
+                            <div class="dropdown-primary dropdown open">
+                                <button class="btn btn-inverse btn-inverse-jag btn-outline-inverse dropdown-toggle waves-effect waves-light "
+                                    type="button" id="dropdown-2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Acciones</button>
+                                <div class="dropdown-menu" aria-labelledby="dropdown-2" data-dropdown-in="fadeIn" data-dropdown-out="fadeOut">
+                                    <a class="dropdown-item waves-light waves-effect"
+                                        href="{{ path('app_info_reparticion_show', {'id': info_reparticion.id}) }}">Ver detalles</a>
+                                    <a class="dropdown-item waves-light waves-effect"
+                                        href="{{ path('app_info_reparticion_dependencias', {'id': info_reparticion.id}) }}">Ver dependencias</a>
+                                    <a class="dropdown-item waves-light waves-effect"
+                                        href="{{ path('app_info_reparticion_edit', {'id': info_reparticion.id}) }}">Editar</a>
+                                </div>
+                            </div>                          
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4">No existen registros</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+
+        </div>
+
+    </div>
+{% endblock %}

@@ -1,0 +1,554 @@
+{% extends "base.html.twig"%}
+{% block title %} Rendir un viático{% endblock %}
+{% block stylesheets %}
+    {{parent()}}
+    <style>
+    #calendar {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .feriado {
+      border-color: '#696969';
+      color: lightgray;
+      font-size: smaller;
+    }
+    .viatico {
+      font-size: small;
+    }
+
+    .table-center {
+      max-width: 54%;
+      margin: 0 auto;
+    }
+
+    .fc th {
+      background: white;
+      color: black;
+    }
+
+
+  </style>
+  <link rel="stylesheet" href="{{asset('bower_components/jquery-minicolors/css/jquery.minicolors.css')}}">
+  <link rel="stylesheet" href="{{asset('bower_components/intro.js/css/introjs.css')}}">
+  {# <link rel="stylesheet" href="{{asset('bower_components/introjs-7.2.0/css/intro.min.css') }} "> #}
+  {#<link rel="stylesheet" href="{{ asset('assets/icon/font-awesome/css/font-awesome.min.css">') }}">#}
+{% endblock %}
+{% block body %}
+  <div class="card">
+      <div class="card-header mb-3" >
+        <h3 id='subtitulo'> Rendición de viático</h3>
+        <p class="text-muted h6 m-b-10 mt-3">A continuación se debe detallar días y lugares de destino de acuerdo a lo solicitado previamente. El monto total solicitado debe coincidir con lo que se rinde.</p>
+      </div>
+
+
+      <div class="card-block tour-step2">
+          <div class="row">
+            <div class="col-sm-12">
+              <h4 class="sub-title">AGENTE</h4>
+              <dl class="dl-horizontal row">
+                  <dt class="col-sm-3">Nombre</dt>
+                  <dd class="col-sm-9">{{viatico.agente.nombre}}</dd>
+                  <dt class="col-sm-3">Apellido</dt>
+                  <dd class="col-sm-9">{{viatico.agente.apellido}}</dd>
+                  <dt class="col-sm-3">CUIL</dt>
+                  <dd class="col-sm-9">{{viatico.agente.cuil}}</dd>
+                  <dt class="col-sm-3 text-truncate">Legajo</dt>
+                  <dd class="col-sm-9">{{viatico.agente.legajo}}</dd>
+                  <dt class="col-sm-3 text-truncate">Dependencia</dt>
+                  <dd class="col-sm-9">{{viatico.agente.dependencia.nombre}}</dd>
+                  <dt class="col-sm-3 text-truncate">Repartición</dt>
+                  <dd class="col-sm-9">{{viatico.agente.reparticion.nombre}}</dd>
+                  <dt class="col-sm-3 text-truncate">Categoría</dt>
+                  <dd class="col-sm-9">{{viatico.agente.categoria}}</dd>
+              </dl>
+          </div>
+          </div>
+          <form action="{{ path('app_rendicion_guardar') }}" method="POST" id="formRendicion">
+          <div class="tour-step1" data-intro="This is Card body" data-step="1" data-hint="Hello step osne!">
+            <table class="table table-center" id="mitabla">
+              <thead>
+                <tr style="background-color: hsla(171, 0%, 97%, 1);">
+                  <th colspan="4">Días solicitados para el viático</th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+
+                </tr>
+                <tr>
+                  <th>Módulo</th>
+                  <th>150%</th>
+                  <th>100%</th>
+                  <th>70%</th>
+                  <th>50%</th>
+                  <th>40%</th>
+                  <th>20%</th>
+                  <th>Mov</th>
+                  <th>Importe solicitado</th>
+                  <th>Importe rendido</th>
+                  <th id="confirmacion"></th>
+
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>$<span id="moduloSolicitado"></span></td>
+                  <td><span id="dias150"></span></td>
+                  <td><span id="dias100"></span></td>
+                  <td><span id="dias70"></span></td>
+                  <td><span id="dias50"></span></td>
+                  <td><span id="dias40"></span></td>
+                  <td><span id="dias20"></span></td>
+                  <td><span id="diasMov"></span></td>
+                  <td>$<span id="importeSolicitado">0</span></td>
+                  <td>$<span id="importe">0</span></td>
+                  <td style="justify-content: center;">
+                    <button type="button" class="btn btn-danger" style="display: none;" id="btn_cancelar">Cancelar</button>
+                    <button class="btn-guardar-rendicion btn btn-outline-success" id="btn_guardar" disabled>
+                  <i class="fa-regular fa-calendar-plus" ></i>&nbsp;Guardar rendición</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+            <input type="hidden" id="solicitado" name="solicitado">
+            <input type="hidden" id="rendicion" name="rendicion">
+          </form>
+          <br>
+          <br>
+          <div class="row" id="calendar_row">
+            <div id='calendarWrapper' class="col-sm-8 ml-5"></div>
+            <div id='calendarInfoWrapper' class="col-sm-3 ml-2"></div>
+          </div>
+
+
+          <!-- Modal Rendicion -->
+          <div class="modal fade" id="rendicionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLongTitle">Rendir</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="form-group">
+                    <h4 class="sub-title">Detalle de la solicitud</h4>
+                    <dl class="dl-horizontal row">
+                      <dt class="col-sm-3 h6">Módulo</dt>
+                      <dd class="col-sm-9 h6">${{viatico.modulo}}</dd>
+                      <dt class="col-sm-3 h6">días al 150%</dt>
+                      <dd class="col-sm-9 h6">{{viatico.dias150}}</dd>
+                      <dt class="col-sm-3 h6">días al 100%</dt>
+                      <dd class="col-sm-9 h6">{{viatico.dias100}}</dd>
+                      <dt class="col-sm-3 h6 text-truncate">días al 70%</dt>
+                      <dd class="col-sm-9 h6">{{viatico.dias70}}</dd>
+                      <dt class="col-sm-3 h6 text-truncate">días al 50%</dt>
+                      <dd class="col-sm-9 h6">{{viatico.dias50}}</dd>
+                      <dt class="col-sm-3 h6 text-truncate">días al 40%</dt>
+                      <dd class="col-sm-9 h6">{{viatico.dias40}}</dd>
+                      <dt class="col-sm-3 h6 text-truncate">días al 20%</dt>
+                      <dd class="col-sm-9 h6">{{viatico.dias20}}</dd>
+                      <dt class="col-sm-3 h6 text-truncate">Movilidad</dt>
+                      <dd class="col-sm-9 h6">{{viatico.valorMovilidad}}</dd>
+                  </dl>
+
+
+                  </div>
+
+                  <div class="form-group">
+                    <input id="fechaRendicion" class="form-control" type="date" value="" disabled />
+                  </div>
+                  <div class="form-group">
+                    <select id="porcentaje" class="form-control form-control-default">
+                      <option value="0">Seleccione procentaje</option>
+                      <option value="1.5">150%</option>
+                      <option value="1">100%</option>
+                      <option value="0.7">70%</option>
+                      <option value="0.5">50%</option>
+                      <option value="0.4">40%</option>
+                      <option value="0.2">20%</option>
+                    </select>
+                    <span class="messages popover-valid"></span>
+                  </div>
+                  <div class="form-group">
+                    <select id="modulo" class="form-control form-control-default">
+                      <option value="0">Seleccione módulo</option>
+                      <option selected value="8400">$8400</option>
+                      <option value="9450">$9450</option>
+                      <option value="10950">$10950</option>
+                    </select>
+                    <span class="messages popover-valid"></span>
+                  </div>
+                  <div class="form-group">
+                    <select id="tipoRendicion" class="form-control form-control-default">
+                      <option value="">Seleccione tipo</option>
+                      <option value="VIATICO">Viático</option>
+                      <option value="MOVILIDAD">Movilidad</option>
+                    </select>
+                    <span class="messages popover-valid"></span>
+                  </div>
+                  <div class="form-group">
+                    <select id="destino" class="form-control form-control-default " placeholder="Seleccione destino">
+                      {% if dependencias %}
+                        {% for dependencia in dependencias %}
+                          <option value="{{dependencia.nombre}}">{{dependencia.nombre}}</option>
+                        {% endfor %}
+                      {% endif %}
+                    </select>
+                    <span class="messages popover-valid"></span>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                  <button type="button" class="btn btn-success btn-aceptar" disabled>Aceptar</button>
+                </div>
+              </div>
+          </div>
+        </div>
+      </div>
+</div>
+
+
+
+<template id="tmpferiado">
+    <h3 class="sub-title" id="info_titulo"><strong>INFO Feriado</strong></h4>
+    <dl class="dl-horizontal row">
+        <dt class="col-sm-3">Fecha</dt>
+        <dd class="col-sm-9">{fecha}</dd>
+        <dt class="col-sm-3">Motivo</dt>
+        <dd class="col-sm-9">{descripcion}</dd>
+    </dl>
+</template>
+
+<template id="tmpviatico">
+    <h3 class="sub-title" id="info_titulo"><strong>INFO OTRO Viático</strong></h4>
+    <dl class="dl-horizontal row">
+        <dt class="col-sm-4">Fecha</dt>
+        <dd class="col-sm-8">{fecha}</dd>
+        <dt class="col-sm-4">Módulo</dt>
+        <dd class="col-sm-8">{modulo}</dd>
+        <dt class="col-sm-4">Porcentaje</dt>
+        <dd class="col-sm-8">{porcentaje}</dd>
+        <dt class="col-sm-4">Tipo</dt>
+        <dd class="col-sm-8">{tipo}</dd>
+        <dt class="col-sm-4">Destino</dt>
+        <dd class="col-sm-8">{destino}</dd>
+        <dt class="col-sm-4">Viático</dt>
+        <dd class="col-sm-8">{viatico}</dd>
+    </dl>
+</template>
+
+<template  id="tmprendicion">
+    <h3 class="sub-title" id="info_titulo"><strong>INFO Rendición</strong></h4>
+    <dl class="dl-horizontal row">
+        <dt class="col-sm-4">Fecha</dt>
+        <dd class="col-sm-8">{fecha}</dd>
+        <dt class="col-sm-4">Módulo</dt>
+        <dd class="col-sm-8">{modulo}</dd>
+        <dt class="col-sm-4">Procentaje</dt>
+        <dd class="col-sm-8">{porcentaje}</dd>
+        <dt class="col-sm-4">Tipo</dt>
+        <dd class="col-sm-8">{tipo}</dd>
+        <dt class="col-sm-4">Destino</dt>
+        <dd class="col-sm-8">{destino}</dd>
+    </dl>
+</template>
+
+
+{% endblock %}
+{% block javascripts %}
+    {{parent()}}
+    <script src="{{asset('bower_components/jquery-minicolors/js/jquery.minicolors.min.js') }} "></script>
+    <script src="{{asset('js/CalendarioManager.js')}}"></script>
+    <script src="{{asset('bower_components/intro.js/js/intro.js') }} "></script>
+    {# <script src="{{asset('bower_components/introjs-7.2.0/js/intro.min.js') }} "></script> #}
+    <script>
+
+    var cManager = null;
+    var feriados = null;
+    var vSolicitado, viaticos = null;
+    var fullCalendar = null;
+
+
+
+    window.GLOBAL_RENDICION = {
+            feriados: [],
+            viaticos: [],
+            solicitud: {}
+    }
+    window.STYLE = {};
+
+
+    /**
+     * Carga los estilos computados para esta pagina
+     * en la variable global STYLE de manera que pueda ser accedido via javascript.
+     * @return void
+     */
+    function cargarStyle() {
+
+      let root = document.documentElement;
+      let style = getComputedStyle(root);
+      window.STYLE = style;
+    }
+
+
+
+    /**
+     * Fetch data de los datos necesarios
+     * en el load del calendario.
+     * @return void
+     */
+      function fetchData(datasets, onload) {
+            let self = this;
+
+            prms = []
+            if(datasets.length > 0) {
+
+                datasets.forEach( dataSource => {
+                    url = dataSource.url;
+                    if(dataSource.params && dataSource.params.length > 0) {
+                        let params = [];
+                        dataSource.params.forEach((p) => {
+                            params.push(p.nombre + "=" + p.valor);
+                        });
+                        url += "?" + params.join("&");
+
+                    }
+
+                    if (url) {
+                        prms.push(
+                            fetch(url)
+                            .then(response => response.json() )
+                            .then((data) => {
+                                if(dataSource.data)
+                                  if( !Array.isArray(dataSource.data)){
+                                    Object.assign(dataSource.data, data);
+                                  }else{
+                                    Object.assign(dataSource.data , data);
+                                  }
+                            })
+                            .catch(error => {
+                                console.log(error)
+                            })
+                        );
+                    }
+                });
+
+                /**
+                 * Barrera hasta que todas las consultas se completen.
+                 * La idea es que se consulta los n datasets
+                 */
+                const allData = Promise.all(prms);
+                allData.then((res) => onload() );
+            }
+        }
+
+
+
+        cManager =  new CalendarioManager({{viatico.mes}}, {{viatico.anio}});
+        /**
+         * Se guarda la solicitud y se opera el sumbit del formulario
+         */
+        cManager.onGuardarRendicion( (event,solicitado ,rendiciones ) => {
+            event.preventDefault();
+            var form = document.getElementById("formRendicion");
+            document.getElementById("solicitado").value = JSON.stringify(solicitado);
+            document.getElementById("rendicion").value = JSON.stringify(rendiciones);            
+            form.submit()
+        });
+
+        /**
+         * Cada vez que se tiene que decorar un dia con un viatico rendido de otras solicitudes
+         */
+        cManager.onDecorarRendicion( (info, viatico) => {
+          info.el.style.backgroundColor = STYLE.getPropertyValue('--color-bg-rendicion');
+          info.el.style.color = STYLE.getPropertyValue('--color-viaticom');
+          info.el.style.borderColor = STYLE.getPropertyValue('--color-br-viaticom');
+          info.el.style.padding = "20px 0 0 5px";
+        });
+
+        /**
+         * Cada vez que se hace un mouse over sobre una rendicion actual
+         */
+        cManager.onMouseOverRendicion( (info, rendicion) => {
+          info.el.style.backgroundColor = STYLE.getPropertyValue('--color-bg-rendicion-hover');
+          let temp = document.getElementById("tmprendicion");
+          let html = temp.innerHTML;
+          let fecha = Date.parseFromATOM(rendicion.fecha);
+          fecha = fecha.toStringLATAM();
+          html = html.replace('{fecha}',fecha );
+          html = html.replace('{modulo}', '$'+rendicion.modulo );
+          html = html.replace('{porcentaje}', '%' + (rendicion.porcentaje * 100) );
+          html = html.replace('{tipo}', rendicion.tipo );
+          html = html.replace('{destino}', rendicion.destino );
+
+          document.getElementById("calendarInfoWrapper").innerHTML = html;
+        });
+
+        /**
+         * Cada vez que se hace un mouse out sobre una rendicion actual
+         */
+        cManager.onMouseOutRendicion( (info, viatico) => {
+          info.el.style.backgroundColor = STYLE.getPropertyValue('--color-bg-rendicion');
+          document.getElementById("calendarInfoWrapper").innerHTML = '';
+        });
+
+
+        /**
+         * Cada vez que se tiene que decorar un dia con un viatico rendido de otras solicitudes
+         */
+        cManager.onDecorarViatico( (info, viatico) => {
+
+          info.el.style.backgroundColor = STYLE.getPropertyValue('--color-bg-viaticom'); //CalendarioManager.BGC_VIATICOM;
+          info.el.style.color = STYLE.getPropertyValue('--color-viaticom'); //CalendarioManager.C_VIATICOM;
+          info.el.style.borderColor = STYLE.getPropertyValue('--color-br-viaticom'); //CalendarioManager.BC_VIATICOM;
+          info.el.style.padding = "20px 0 0 5px";
+        });
+
+        /**
+         * Cada vez que se hace un mouse over sobre un viatico
+         */
+        cManager.onMouseOverViatico( (info, viatico) => {
+          info.el.style.backgroundColor = STYLE.getPropertyValue('--color-bg-viaticom-hover');
+          let temp = document.getElementById("tmpviatico");
+          let html = temp.innerHTML;
+          let fecha = Date.parseFromATOM(viatico.fecha);
+          fecha = fecha.toStringLATAM();
+          html = html.replace('{fecha}',fecha );
+          html = html.replace('{modulo}', '$'+viatico.modulo );
+          html = html.replace('{porcentaje}', '%' + (viatico.porcentaje * 100) );
+          html = html.replace('{tipo}', viatico.tipo );
+          html = html.replace('{destino}', viatico.destino );
+          html = html.replace('{viatico}', viatico.viatico );
+
+          document.getElementById("calendarInfoWrapper").innerHTML = html;
+        });
+
+        /**
+         * Cada vez que se hace un mouse out sobre un viatico
+         */
+        cManager.onMouseOutViatico( (info, viatico) => {
+          info.el.style.backgroundColor = STYLE.getPropertyValue('--color-bg-viaticom');
+          document.getElementById("calendarInfoWrapper").innerHTML = '';
+        });
+
+
+
+        /**
+         * Cada vez que se tiene que decorar un dia feriado
+         */
+        cManager.onDecorarFeriado( (info, feriado) => {
+            info.el.style.backgroundColor = STYLE.getPropertyValue('--color-bg-feriado'); // CalendarioManager.BGC_FERIADO;
+            info.el.style.color = STYLE.getPropertyValue('--color-feriado'); //CalendarioManager.C_FERIADO;
+            info.el.style.fontSize = "smaller";
+            info.el.style.fontWeight = "bold";
+            info.el.style.color = "white";
+            info.el.classList.add("wrap");
+            info.el.style.padding = "20px 0 0 5px";
+        });
+
+        /**
+         * Cada vez que se hace mouse over sobre un feriado
+         */
+        cManager.onMouseOverFeriado( (info, feriado) => {
+          info.el.style.backgroundColor = STYLE.getPropertyValue('--color-bg-feriado-hover');
+
+          let temp = document.getElementById("tmpferiado");
+          let html = temp.innerHTML;
+          html = html.replace('{fecha}', feriado.dia+"/"+feriado.mes+"/"+feriado.anio);
+          html = html.replace('{descripcion}', feriado.descripcion);
+          document.getElementById("calendarInfoWrapper").innerHTML = html;
+        });
+
+        /**
+         * Cada vez que se hace mouse out sobre un feriado
+         */
+        cManager.onMouseOutFeriado( (info, feriado) => {
+          info.el.style.backgroundColor = STYLE.getPropertyValue('--color-bg-feriado');
+          document.getElementById("calendarInfoWrapper").innerHTML = '';
+        });
+
+
+
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            /** Fuentes de datos necesarias para mostrar en el calendario */
+            datasets = [
+                  {
+                      url: "{{ path('app_feriado_obtener_por_mes_anio') }}",
+                      params: [
+                          {nombre: 'mes', valor: {{viatico.mes}}},
+                          {nombre: 'anio', valor: {{viatico.anio}}}
+                      ],
+                      data: GLOBAL_RENDICION.feriados
+                  },
+                  {
+                      url: "{{path('app_get_agente_viaticos_mes')}}",
+                      params: [
+                          {nombre: 'idAgente', valor: {{viatico.agente.id}}},
+                          {nombre: 'mes', valor: {{viatico.mes}}},
+                          {nombre: 'anio', valor: {{viatico.anio}}}
+                      ],
+                      data: GLOBAL_RENDICION.viaticos
+                  },
+                  {
+                      url: "{{path('app_get_data_viatico')}}",
+                      params: [
+                          {nombre: 'idViatico', valor: {{viatico.id}}},
+                      ],
+                      data: GLOBAL_RENDICION.solicitud
+                  },
+            ];
+            /**
+             * Obtiene los datos necesarios para visualizar el calendario
+             */
+            fetchData(datasets, () => {
+              cManager.setFeriados(GLOBAL_RENDICION.feriados);
+              cManager.setViaticos(GLOBAL_RENDICION.viaticos);
+              cManager.setSolicitud(GLOBAL_RENDICION.solicitud);
+              fullCalendar = cManager.crearFullCalendar(document.getElementById("calendarWrapper"));
+              cManager.refrescarFullCalendar();
+              $('[data-toggle="tooltip"]').tooltip();
+              $('[data-toggle="popover"]').popover();
+
+            });
+
+            /**
+             * Carga los estilos en la variable global STYLE
+             * de manera que se pueda acceder a los elementos de overwrite.css
+             * via javascript
+             */
+            cargarStyle();
+
+            document.querySelector('#subtitulo').addEventListener('click', (event) => {
+              debugger;
+              /**
+              * Activa el tour si lo hubiera. NO FUNCIONAAAA!
+              */
+              introJs().setOptions({
+                  steps: [
+                  {
+                    element: document.querySelector('.tour-step1'),
+                    intro: 'Tooltip has position right',
+                    position: 'right'
+                  },
+                  {
+                    element: document.querySelector('.tour-step12'),
+                    intro: 'Tooltip has position left',
+                    position: 'left'
+                  }]
+              }).start();
+            });
+
+
+        });
+
+  </script>
+{% endblock %}

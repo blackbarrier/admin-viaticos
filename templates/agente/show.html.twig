@@ -1,0 +1,132 @@
+{% extends 'base.html.twig' %}
+{% block title %}Viáticos - Detalles de Agente{% endblock %}
+{% block stylesheets %}
+    {{parent()}}
+    <style>
+       .table th{
+        background:dimgray;
+        color:white;
+        max-width:1.2em;
+       }
+    </style>
+{% endblock %}
+
+{% block body %}
+   <div class="card">
+        <div class="card-header p-3" style="display:flex; flex-direction:column; align-items:center; justify-content:space-between"> 
+            <h4>Mostrando los datos del agente &nbsp;"<b> {{agente.nombre}}&nbsp;{{agente.apellido}}</b> "</h4>
+            <a href="{{ path('app_agente_index') }}"><button class="btn btn-inverse btn-inverse-jag btn-outline-inverse"><i class="ti-share"></i>&nbsp;Volver al listado</button></a>
+        </div>
+        <div class="card-block mt-3">
+            <table class="table table-striped">
+                    <tbody>
+                        <tr>
+                            <th>Apellido</th>
+                            <td>{{ agente.apellido }}</td>
+                        </tr>
+                        <tr>
+                            <th>Nombre</th>
+                            <td>{{ agente.nombre }}</td>                    
+                        </tr>
+                        <tr>
+                            <th>Legajo</th>
+                            <td>{{ agente.legajo }}</td>
+                        </tr>
+                        <tr>
+                            <th>Dni</th>
+                            <td>{{ agente.numeroDocumento }}</td>
+                        </tr>
+                        <tr>
+                            <th>Género</th>
+                            <td>{{ agente.genero.nombre }}</td>
+                        </tr>
+                        <tr>
+                            <th>Cuil</th>
+                            <td>{{ agente.cuil }}</td>
+                        </tr>
+                        <tr>
+                            <th>Categoría</th>
+                            <td>{{ agente.categoria }}</td>
+                        </tr>
+                        <tr>
+                            <th>Externo</th>
+                            <td>
+                                {% if agente.externo  == 1 %}
+                                    Si
+                                {% else %}
+                                    No
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Repartición</th>
+                            <td>{{ agente.reparticion.nombre }}</td>
+                        </tr>
+                        <tr>
+                            <th>Dependencia</th>
+                            <td>{{ agente.dependencia.nombre }}</td>
+                        </tr>
+                        <tr>
+                            <th>Número de Cuenta</th>
+                            <td>{{ agente.numeroCuenta }}</td>
+                        </tr>
+                        <tr>
+                            <th>Sucursal</th>
+                            <td>{{ agente.sucursal }}</td>
+                        </tr>
+                        <tr>
+                            <th>Dígito</th>
+                            <td>{{ agente.digito }}</td>                        
+                        </tr>
+                        <tr>
+                            <th>CBU 1</th>
+                            <td>{{ agente.cbu1 }}</td>
+                        </tr>
+                        <tr>
+                            <th>CBU 2</th>
+                            <td>{{ agente.cbu2 }}</td>
+                        </tr>
+                        <tr>
+                            <th>Tag</th>
+                            <td>{{ agente.tag }}</td>
+                        </tr>
+                        <tr>
+                            <th>Activo</th>
+                            <td style="border:yes">
+                                {% if agente.activo  == 1 %}
+                                    Si
+                                {% else %}
+                                    No 
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Borrado</th>
+                            <td style="border:yes">
+                                {% if agente.borrado  == 1 %}
+                                    Si
+                                {% else %}
+                                    No 
+                                {% endif %}
+                            </td>     
+                        </tr>
+                        <tr>               
+                            <th>Fecha Alta</th>
+                            <td>{{ agente.fechaAlta ? agente.fechaAlta|date('d/m/Y H:i') : '--/--/---- --:--'}}&nbsp;hs </td>
+                        </tr>
+                        <tr>
+                            <th>Fecha Activo</th>
+                            <td>{{ agente.fechaAct ? agente.fechaAct|date('d/m/Y H:i') : '--/--/---- --:--'}}&nbsp;hs </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            <div style="display:flex; flex-direction:row; column-gap:1em; align-items:center; justify-content:space-between;">
+                <a href="{{ path('app_agente_edit', {'id': agente.id}) }}" ><button class="btn btn-inverse btn-inverse-jag btn-outline-inverse"><i class="ti-pencil"></i>&nbsp;Editar</button></a>
+            </div>
+            </div>
+        </div>
+   
+
+    
+{% endblock %}

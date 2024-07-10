@@ -1,0 +1,245 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editar Plantilla{% endblock %}
+
+{% block stylesheets %}
+{{parent()}}
+<style>
+    #tablaAgentes{
+        border:2px solid #000;
+        padding:1em;
+        margin:1em;
+        min-height:100px;
+        height:fit-content;
+    }
+    #plantilla{
+        position:absolute;
+        display:flex;
+        flex-direction:row;
+    }
+    #plantilla label{
+        padding:1em;
+        font-weight:bold;
+    }
+    #plantilla input{
+        padding: 0.5rem 0.75rem;
+        font-size: 1rem;
+        line-height: 1.25;
+        color: #495057;
+        background-color: #fff;
+        background-image: none;
+        background-clip: padding-box;
+        border: 1px solid rgba(0, 0, 0, .15);
+        border-radius: 0.25rem;
+        transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    }
+    #plantilla_guardar{
+        position:absolute;
+        right:10px;
+     }
+     #boton_BorrarPlantilla{
+        position:absolute;
+        right:17em;
+     }
+     
+</style>
+{% endblock %}
+
+
+{% block body %}
+
+
+<div class="card" >
+    <div class="card-header" style="display:flex; flex-direction:row; align-items:center; justify-content:space-between; padding:3em;">
+        <h2><i class="ti-receipt" style="z-index:9"></i><i class="ti-pencil" style="font-size:0.6em; margin-left:-5px; z-index:10"></i>&nbsp;<b>Editando la plantilla  " {{ plantilla.identificacion }} "</b></h2>
+        <a href="{{ path('app_plantilla_index') }}"><button class="btn btn-inverse btn-inverse-jag btn-outline-inverse"><i class="ti-back-right"></i>&nbsp;Volver al listado</button></a>   
+    </div>
+    <div class="card-block p-5">
+        <h4>Búsqueda de Agentes para agregar:</h4>
+
+        <select name="agentes" class="listadoAgentes" id="agentes">
+        </select>
+        <div class="p-2" style="display:flex; flex-direction:row; justify-content:center">
+            <button id="agregarBtn" class="btn btn-inverse btn-inverse-jag btn-outline-inverse" style="margin-top:1em; width:50%; margin:0 auto; margin-top:1em;"><i class="ti-user"></i><i class="ti-arrow-down"></i>&nbsp;Agregar Agente al Listado</button>
+        </div>
+        <table class="table table-striped" id="tablaAgentes">
+
+            <thead>
+                <tr>
+                    <th>Legajo</th>           
+                    <th>Apellido</th>               
+                    <th>Nombre</th>               
+                    <th>Quitar</th> 
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for agente in agentesActuales %}
+                <tr>               
+                    <td>{{agente.legajo}}</td>               
+                    <td>{{agente.apellido}}</td>
+                    <td>{{agente.nombre}}</td>               
+                    <td>
+                        <input type='text' name='value' value={{agente.id}} style='display:none'>
+                        <button class='btn btn-inverse btn-inverse-jag btn-outline-inverse delete'>Eliminar</td>        
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+        <p><b><u>Ultima modificación realizada:</u></b>&nbsp;<b>{{ plantilla.ultimaMod ? plantilla.ultimaMod|date('d/m/Y H:i') : '' }} hs</b></p>
+        <div style="position:relative; width:100%; padding:2em;">
+            {{ include('plantilla/_form.html.twig', {'button_label': 'Guardar Cambios'}) }}
+            {{ include('plantilla/_delete_form.html.twig') }}
+        </div>
+    </div>
+</div>
+
+
+    
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+       <script>
+         $(document).ready(function () {
+            {% if "ROLE_SUPER_ADMIN" in app.user.rolesactivos %}
+                var mode = 1;
+            {% else %}
+                var mode = 0;
+            {% endif %}
+            $('.listadoAgentes').select2({
+                ajax: {
+                        url: "{{ path('app_get_agentes_ajax') }}",
+                        dataType: 'json',
+                        method:"POST",
+                        delay: 250,
+                        data: function (params) {
+                            
+                            return {
+                                q: params.term, // search term
+                                mode:mode
+                            };
+                        },
+                        processResults: function (data) {
+                            console.log(data);
+                            return {
+                                results: data
+                            };
+                        }
+                    },
+                    minimumInputLength: 1,
+                    placeholder: 'Ingrese algun dato'
+                });
+            });
+
+
+    </script>
+    <script>
+
+        
+
+
+        document.addEventListener('DOMContentLoaded', function() {        
+
+        var arrayAgentes = [];
+        {% for agente in agentesActuales %}
+            arrayAgentes.push('{{agente.id}}');
+        {% endfor %}
+        document.getElementById('plantilla_agentes').value = JSON.stringify(arrayAgentes);
+
+        
+
+            //Boton Agregar agentes
+            document.getElementById('agregarBtn').addEventListener('click', function() {
+
+                //Incorporar datos a un array.
+                var selectElement = document.getElementById('agentes');
+                var selectedValue = selectElement.options[selectElement.selectedIndex].value;
+                if (arrayAgentes.indexOf(selectedValue) === -1) {
+                    // El valor no está en el array, agregarlo
+                    arrayAgentes.push(selectedValue);
+                   
+                //Incorporar agentes a la pre-visualizacion                
+                var selectedValue = selectElement.value;
+                           
+                var selectedOption = selectElement.options[selectElement.selectedIndex];
+                var content = selectedOption.textContent;
+
+                content = content.split(" ");
+                legajo = content[0];
+                apellido = content[1];
+                nombre = content[2];
+
+                var newRow = document.createElement('tr');
+                newRow.innerHTML = 
+                `
+                    <td>${legajo}</td>
+                    <td>${apellido}</td>
+                    <td>${nombre}</td>
+                    <td>
+                    <input type='text' name='value' value='${selectedValue}' style='display:none'>
+                    <button class='btn btn-inverse btn-inverse-jag btn-outline-inverse delete'>Eliminar</td>
+                `;
+
+                document.getElementById('tablaAgentes').getElementsByTagName('tbody')[0].appendChild(newRow);  
+                document.getElementById('plantilla_agentes').value = JSON.stringify(arrayAgentes);
+                
+ 
+                }
+            });
+
+            //Eliminar agente.
+            $(document).on("click", ".delete", function(){
+                val = $(this).prev().val();
+            
+            arrayAgentes = jQuery.grep(arrayAgentes, function(element) {
+                    return element !== val;
+                });
+
+            document.getElementById('plantilla_agentes').value = JSON.stringify(arrayAgentes);
+            
+            $(this).closest("tr").remove();
+            });
+
+           
+        });
+
+    </script>
+    <script>
+         $(document).ready(function () {
+                $('#tablaAgentes').DataTable({
+                    "language": {
+                        "sProcessing": "Procesando...",
+                        "sLengthMenu": "Mostrar _MENU_ agentes",
+                        "sZeroRecords": "No se encontraron resultados",
+                        "sEmptyTable": "Ningún dato disponible en esta tabla",
+                        "sInfo": "Mostrando agentes del _START_ al _END_ de un total de _TOTAL_ agentes",
+                        "sInfoEmpty": "Mostrando agentes del 0 al 0 de un total de 0 agentes",
+                        "sInfoFiltered": "(filtrado de un total de _MAX_ agentes)",
+                        "sInfoPostFix": "",
+                        "sSearch": "Buscar:",
+                        "sUrl": "",
+                        "sInfoThousands": ",",
+                        "sLoadingRecords": "Cargando...",
+                        "oPaginate": {
+                            "sFirst": "Primero",
+                            "sLast": "Último",
+                            "sNext": "Siguiente",
+                            "sPrevious": "Anterior"
+                        },
+                        "oAria": {
+                            "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                            "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                        }
+                    }
+                });
+
+            }, 500);    
+                
+
+    </script>
+ 
+
+        
+{% endblock %}

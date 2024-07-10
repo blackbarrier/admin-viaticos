@@ -1,0 +1,110 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Feriados{% endblock %}
+{% block stylesheets %}
+    {{parent()}}
+    <style>
+    </style>
+
+{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-header">
+            <br>
+            <div class="row">
+                <div class="col-sm-10">
+
+                    <h3><i class="ti-settings"></i>&nbsp;Feriados</h3>
+                    <p class="text-muted h6 m-b-10 mt-3">Lista de feriados registrados en la plataforma</p>
+                </div>
+                <div class="col-sm-2"><br>
+                    <a href="{{ path('app_feriado_new') }}"><button class="btn btn-inverse btn-inverse-jag btn-outline-inverse"><i class="ti-settings" >+</i>&nbsp;Agregar feriado</button></a>
+                </div>
+            </div>
+        </div>
+        <br>
+
+    
+    <div class="card-block">
+        <div class="row">
+            <div class="col" style="overflow:auto">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Descripción</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for feriado in feriados %}
+                        <tr>
+                            <td>{% if feriado.dia < 10 %}0{% endif %}{{feriado.dia}}/{% if feriado.mes < 10 %}0{% endif %}{{feriado.mes}}/{{feriado.anio}}</td>
+                            <td>{{feriado.descripcion|raw}}</td>
+                            <td>
+                                <div class="dropdown-primary dropdown open">
+                                        <button class="btn btn-inverse btn-inverse-jag btn-outline-inverse dropdown-toggle waves-effect waves-light " type="button" id="dropdown-2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Acciones</button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdown-2" data-dropdown-in="fadeIn" data-dropdown-out="fadeOut">
+                                            <a class="dropdown-item waves-light waves-effect" href="{{ path('app_feriado_edit', {"id":feriado.id}) }}">Editar</a>
+                                            {#<div class="dropdown-divider"></div>#}
+                                            <a class="dropdown-item waves-light waves-effect eliminar" href="{{ path('app_feriado_delete', {"id":feriado.id}) }}" >Eliminar</a>
+                                        </div>
+                                    </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tdoby>
+                </table>
+            </div>
+        </div>
+    </div>    
+{% endblock %}
+
+
+
+{% block javascripts %}
+    {{parent()}}
+    <script>
+       setTimeout(() => {          
+            $('.table').DataTable({
+                    "language": {
+                        "sProcessing":     "Procesando...",
+                        "sLengthMenu":     "Mostrar _MENU_ feriados",
+                        "sZeroRecords":    "No se encontraron resultados",
+                        "sEmptyTable":     "Ningún dato disponible en esta tabla",
+                        "sInfo":           "Mostrando feriados del _START_ al _END_ de un total de _TOTAL_ feriados",
+                        "sInfoEmpty":      "Mostrando feriados del 0 al 0 de un total de 0 agentes",
+                        "sInfoFiltered":   "(filtrado de un total de _MAX_ feriados)",
+                        "sInfoPostFix":    "",
+                        "sSearch":         "Buscar:",
+                        "sUrl":            "",
+                        "sInfoThousands":  ",",
+                        "sLoadingRecords": "Cargando...",
+                        "oPaginate": {
+                            "sFirst":    "Primero",
+                            "sLast":     "Último",
+                            "sNext":     "Siguiente",
+                            "sPrevious": "Anterior"
+                        },
+                        "oAria": {
+                            "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+                            "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                        }
+                    }
+            });
+         }, 500);
+         $(document).on("click",".eliminar",function(event){
+                event.preventDefault();
+                var link = $(this).attr("href");
+                modalSetTitle("<i class='fa-solid fa-triangle-exclamation'></i>&nbsp;Esta acción requiere confirmación");
+                modalLoadContent("<div class='container'>"+
+                                    "<div class='col' style='text-align:center'>"+
+                                        "<h5>¿Desea continuar con el borrado de este feriado?</h5>"+
+                                        "<a href='"+link+"'><button class='btn btn-inverse btn-inverse-jag btn-outline-inverse'><i class='ti-check'></i>&nbsp;Continuar con el borrado</button></a>"+
+                                    "</div>"+
+                '</div>');
+                modalFadeIn();
+         });
+    </script>
+{% endblock %}

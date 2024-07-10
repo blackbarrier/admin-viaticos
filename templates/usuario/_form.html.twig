@@ -1,0 +1,43 @@
+{{ form_start(form) }}
+    <table class="table">
+            <tbody>
+                <tr>
+                    <th>DNI</th>
+                    <td>{{ form_widget(form.dni) }}</td>
+                </tr>
+                <tr>
+                    <th>Cuil</th>
+                    <td>{{ form_widget(form.cuil) }}</td>
+                </tr>
+                <tr>
+                    <th>Nombre</th>
+                    <td>{{ form_widget(form.nombre) }}</td>
+                </tr>
+                <tr>
+                    <th>Apellido</th>
+                    <td>{{ form_widget(form.apellido) }}</td>
+                </tr>
+                <tr>
+                    <th>Género</th>
+                    <td>{{ form_widget(form.genero) }}</td>
+                </tr>
+                <tr>
+                    <th>e-mail</th>
+                    <td>{{form_widget(form.email) }}</td>
+                </tr>
+                <tr>
+                    <th>Rol</th>
+                    <td>{{ form_widget(form.rolesActivos) }}</td>
+                </tr>
+                <tr>
+                    <th>Dependencia</th>
+                    <td>{{ form_widget(form.dependencia) }}</td>
+                </tr>
+                {# <tr>
+                    <th>Repertición</th>
+                    <td>{{ form_widget(form.reparticion) }}</td>
+                </tr> #}
+            </tbody>
+        </table>
+        <button class="btn btn-inverse btn-inverse-jag btn-outline-inverse" id="usuario_Guardar"><i class="ti-save"></i>&nbsp;{{ button_label|default('Guardar') }}</button>
+{{ form_end(form) }}

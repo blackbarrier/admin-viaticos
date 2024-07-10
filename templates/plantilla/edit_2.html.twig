@@ -1,0 +1,239 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editar Plantilla{% endblock %}
+
+{% block stylesheets %}
+{{parent()}}
+<style>
+    
+     
+</style>
+{% endblock %}
+
+
+{% block body %}
+<div class="card">
+        <div class="card-header"> 
+            <div class="row">
+                <div class="col-sm-10">
+                    <h3><i class="ti-pencil" style="font-size:0.8em;"></i>&nbsp;<b>Editando la plantilla  " {{ plantilla.identificacion }} "</b></h3>
+                </div>
+                <div class="col-sm-2 pt-2">
+                    <a href="{{ path('app_plantilla_index') }}"><button class="btn btn-inverse btn-inverse-jag btn-outline-inverse"><i class="ti-back-right"></i>&nbsp;Volver al listado</button></a>  
+                </div>
+            </div>
+            <br>
+            <br>
+            
+        </div>
+        <br>
+
+        <div class="card-block">
+            <div class="row">
+                <div class="col-sm-8">                    
+                    <select name="agentes" class="js-example-basic-single listadoAgentes" id="agentes">
+                    </select>
+                </div>
+                <div class="col-sm-4" >
+                    <button id="agregarBtn" class="btn btn-inverse btn-inverse-jag btn-outline-inverse"><i class="ti-user"></i><i class="ti-arrow-down"></i>&nbsp;Agregar Agente al Listado</button>
+                </div>                
+            </div>
+            <br>
+            <br>
+                <table class="table" id="tablaAgentes">
+                <thead>
+                    <tr>
+                        <th>Legajo</th>           
+                        <th>Apellido</th>               
+                        <th>Nombre</th>               
+                        <th>Accion</th> 
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for agente in agentesActuales %}
+                    <tr>               
+                        <td>{{agente.legajo}}</td>               
+                        <td>{{agente.nombre}}</td>               
+                        <td>{{agente.apellido}}</td>
+                        <td>
+                            <input type='text' name='value' value={{agente.id}} style='display:none'>
+                            <button class='btn btn-inverse btn-inverse-jag btn-outline-inverse delete'>Eliminar</td>        
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                </table>
+            
+        </div>
+</div>
+
+
+
+
+    
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+       <script>
+         $(document).ready(function () {
+            $('.listadoAgentes').select2({
+                placeholder: 'Ingrese una opción',
+                ajax: {
+                        url: "{{ path('app_get_agentes_ajax') }}",
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                q: params.term, // search term
+                                mode:1
+                            };
+                        },
+                        processResults: function (data) {
+                            return {
+                                results: data
+                            };
+                        }
+                    },
+                    minimumInputLength: 1,
+                });
+            });
+
+    </script>
+    <script>
+
+        function postAgregarAgente(cuil) {
+
+            var url = "{{ path('app_post_agente') }}";
+            var data = { cuil: cuil, idplantilla: 19 };
+
+            fetch(url, {
+                method: "POST", // or 'PUT'
+                body: JSON.stringify(data), // data can be `string` or {object}!
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                })
+                .then((res) => res.json())
+                .catch((error) => console.error("Error:", error))
+                .then((response) => console.log("Success:", response));
+        }
+
+        
+
+
+        document.addEventListener('DOMContentLoaded', function() {        
+
+        var arrayAgentes = [];
+        {% for agente in agentesActuales %}
+            arrayAgentes.push('{{agente.id}}');
+        {% endfor %}
+        document.getElementById('plantilla_agentes').value = JSON.stringify(arrayAgentes);
+
+        
+
+            //Boton Agregar agentes
+            document.getElementById('agregarBtn').addEventListener('click', function() {
+
+                //Incorporar datos a un array.
+                var selectElement = document.getElementById('agentes');
+                var selectedValue = selectElement.options[selectElement.selectedIndex].value;
+                
+                
+                
+                /******************************************
+                Aca se invoca la llamada post
+                ******************************************/
+                postAgregarAgente(selectedValue);
+
+                
+                
+                
+                
+                
+                if (arrayAgentes.indexOf(selectedValue) === -1) {
+                    // El valor no está en el array, agregarlo
+                    arrayAgentes.push(selectedValue);
+                   
+                //Incorporar agentes a la pre-visualizacion                
+                var selectedValue = selectElement.value;
+                           
+                var selectedOption = selectElement.options[selectElement.selectedIndex];
+                var content = selectedOption.textContent;
+
+                content = content.split(" ");
+                legajo = content[0];
+                apellido = content[1];
+                nombre = content[2];
+
+                var newRow = document.createElement('tr');
+                newRow.innerHTML = 
+                `
+                    <td>${legajo}</td>
+                    <td>${apellido}</td>
+                    <td>${nombre}</td>
+                    <td>
+                    <input type='text' name='value' value='${selectedValue}' style='display:none'>
+                    <button class='delete'>Eliminar</td>
+                `;
+
+                document.getElementById('tablaAgentes').getElementsByTagName('tbody')[0].appendChild(newRow);  
+                document.getElementById('plantilla_agentes').value = JSON.stringify(arrayAgentes);
+                
+ 
+                }
+            });
+
+            //Eliminar agente.
+            $(document).on("click", ".delete", function(){
+                val = $(this).prev().val();
+            
+            arrayAgentes = jQuery.grep(arrayAgentes, function(element) {
+                    return element !== val;
+                });
+
+            document.getElementById('plantilla_agentes').value = JSON.stringify(arrayAgentes);
+            
+            $(this).closest("tr").remove();
+            });
+
+           
+        });
+
+    </script>
+    <script>
+         $(document).ready(function () {
+                $('#tablaAgentes').DataTable({
+                    "language": {
+                        "sProcessing": "Procesando...",
+                        "sLengthMenu": "Mostrar _MENU_ usuarios",
+                        "sZeroRecords": "No se encontraron resultados",
+                        "sEmptyTable": "Ningún dato disponible en esta tabla",
+                        "sInfo": "Mostrando usuarios del _START_ al _END_ de un total de _TOTAL_ usuarios",
+                        "sInfoEmpty": "Mostrando usuarios del 0 al 0 de un total de 0 usuarios",
+                        "sInfoFiltered": "(filtrado de un total de _MAX_ usuarios)",
+                        "sInfoPostFix": "",
+                        "sSearch": "Buscar:",
+                        "sUrl": "",
+                        "sInfoThousands": ",",
+                        "sLoadingRecords": "Cargando...",
+                        "oPaginate": {
+                            "sFirst": "Primero",
+                            "sLast": "Último",
+                            "sNext": "Siguiente",
+                            "sPrevious": "Anterior"
+                        },
+                        "oAria": {
+                            "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                            "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                        }
+                    }
+                });
+
+            }, 500);    
+                
+
+    </script>
+ 
+
+        
+{% endblock %}

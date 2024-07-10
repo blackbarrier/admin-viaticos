@@ -1,0 +1,116 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Viáticos - Detalles de Usuario{% endblock %}
+{% block stylesheets %}
+    {{parent()}}
+    <style>
+        h4{
+            color:#009aae;
+            font-weight:bold;
+            padding:1em;
+        }
+        .table{
+            width:fit-content;
+            min-width:800px;
+            max-width:80%;
+            margin: 0 auto;
+            box-shadow: 0px 0px 5px lightgray;
+            border-radius:4px;
+            margin-top:1em;
+            margin-bottom:1em;
+            padding:1em;
+        }
+        .table tbody > tr > th{
+            background:#009aae;
+            color:white;
+            border-bottom:1px solid white;
+        }
+        .table tbody > tr > td{
+            border-bottom:1px solid #009aae;
+          }
+    </style>
+{% endblock %}
+{% block body %}
+    <div class="card" style="display:flex; flex-direction:column; align-items:center; padding:1.5em; row-gap: 1em; width:fit-content; margin:0 auto;margin-top:5em;"> 
+        <h4>Mostrando los datos del usuario &nbsp;'<b style="color:royalblue"> {{usuario.nombre}}&nbsp;{{usuario.apellido}}</b>'</h4>
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>DNI</th>
+                    <td>{{usuario.dni}}</td>
+                </tr>
+                <tr>
+                    <th>Cuil</th>
+                    <td>{{ usuario.cuil }}</td>
+                </tr>
+                <tr>
+                    <th>Nombre</th>
+                    <td>{{ usuario.nombre }}</td>
+                </tr>
+                <tr>
+                    <th>Apellido</th>
+                    <td>{{ usuario.apellido }}</td>
+                </tr>
+                <tr>
+                    <th>Género</th>
+                    <td>{{ usuario.genero.nombre }}</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>{{ usuario.email }}</td>
+                </tr>
+                <tr>
+                    <th>Dependencia</th>
+                    <td>{{ usuario.dependencia.nombre }}</td>
+                </tr>
+                <tr>
+                    <th>Repartición</th>
+                    <td>{{ usuario.reparticion.nombre }}</td>
+                </tr>
+                <tr>
+                    <th>Fecha de Alta</th>
+                    <td>{{ usuario.fechaAlta ? usuario.fechaAlta|date('d/m/Y H:i') : '--/--/---- --:--' }}&nbsp;hs</td>
+                </tr>
+                <tr>
+                    <th>Roles</th>
+                    <td class="col p-3" style="display:flex; flex-direction:column; row-gap:1em; align-items:center; justify-content:space-evenly;">
+                        <label>
+                        {% set arrayRoles = usuario.fetchRoles() %}
+                            {% for rol in arrayRoles %}
+                                <b style="padding:5px; border:1px solid #009aae; color:#009aae; filter:drop-shadow(0px 1px 3px lightgray); border-radius:20px;">{{rol.descripcion}}</b>
+                            {% endfor %}
+                        </label>
+                    </td>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Activo</th>
+                    <td>{% if usuario.activo  == 1 %}
+                                Si
+                        {% else %}
+                                No
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Último Acceso</th>
+                    <td>{{ usuario.ultimoAcceso ? usuario.ultimoAcceso|date('d/m/Y H:i') : '--/--/---- --:--'}}&nbsp;hs</td>
+                </tr>
+                <tr>
+                    <th style="border:none">Borrado</th>
+                    <td style="border:none">
+                        {% if usuario.borrado  == 1 %}
+                                Si
+                        {% else %}
+                                No
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div style="display:flex; flex-direction:row; column-gap:1em; align-items:center; justify-content:space-between;">
+            <a href="{{ path('app_usuario_index') }}"><button class="btn btn-inverse btn-inverse-jag btn-outline-inverse"><i class="ti-share"></i>&nbsp;Volver al listado</button></a>
+            <a href="{{ path('app_usuario_edit', {'id': usuario.id}) }}" ><button class="btn btn-inverse btn-inverse-jag btn-outline-inverse"><i class="ti-pencil"></i>&nbsp;Editar</button></a>
+        </div>
+    </div>
+{% endblock %}

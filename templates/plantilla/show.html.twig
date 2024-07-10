@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Agentes en plantilla.{% endblock %}
+
+{% block stylesheets %}
+{{parent()}}
+{% endblock %}
+
+{% block body %}
+
+<div class="card">
+   
+    <div class="card-header" style="display:flex; flex-direction:row; align-items:center; justify-content:space-between;">
+        <h2 ><i class="ti-receipt" ></i>&nbsp; Visualizando los agentes de la plantilla " {{ plantilla.identificacion }} "</h2>
+        <a href="{{ path('app_plantilla_index') }}"><button class="btn btn-inverse btn-inverse-jag btn-outline-inverse"><i class="ti-back-right"></i>&nbsp;Volver al listado</button></a>   
+    </div>
+    <div class="card-block p-5">
+        <table class="table table-striped" id="miTabla">
+            <thead>
+                <tr>
+                    <th>Legajo</th>           
+                    <th>Apellido</th>               
+                    <th>Nombre</th>           
+                </tr>
+            
+            </thead>
+            <tbody>
+                {% for agente in agentes %}
+                <tr>               
+                    <td>{{agente.legajo}}</td>               
+                    <td>{{agente.apellido}}</td>        
+                    <td>{{agente.nombre}}</td>               
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p><b><u>Última modificación realizada:</u> &nbsp;{{ plantilla.ultimaMod ? plantilla.ultimaMod|date('d/m/Y H:i')~" hs" : '' }}</b></p>
+        <div style="display:flex; flex-direction:row; justify-content:center; align-items:center; widht:100%">
+            <a href="{{ path('app_plantilla_edit', {'id': plantilla.id}) }}"><button class="btn btn-inverse btn-inverse-jag btn-outline-inverse"><i class="ti-pencil"></i>&nbsp;Editar</button></a>
+        </div>
+    </div>
+</div>
+
+    
+
+{% endblock %}
+
+
+{% block javascripts %}
+{{ parent() }}
+
+
+<script>
+     $(document).ready(function () {
+            $('#miTabla').DataTable({
+                "language": {
+                "sProcessing": "Procesando...",
+                "sLengthMenu": "Mostrar _MENU_ agentes",
+                "sZeroRecords": "No se encontraron resultados",
+                "sEmptyTable": "Ningún dato disponible en esta tabla",
+                "sInfo": "Mostrando agentes del _START_ al _END_ de un total de _TOTAL_ agentes",
+                "sInfoEmpty": "Mostrando agentes del 0 al 0 de un total de 0 agentes",
+                "sInfoFiltered": "(filtrado de un total de _MAX_ agentes)",
+                "sInfoPostFix": "",
+                "sSearch": "Buscar:",
+                "sUrl": "",
+                "sInfoThousands": ",",
+                "sLoadingRecords": "Cargando...",
+                "oPaginate": {
+                    "sFirst": "Primero",
+                    "sLast": "Último",
+                    "sNext": "Siguiente",
+                    "sPrevious": "Anterior"
+                },
+                "oAria": {
+                    "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                    "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                }
+            }
+        });
+
+        }, 500);    
+   
+</script>
+
+
+
+
+
+
+{% endblock %}

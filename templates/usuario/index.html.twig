@@ -1,0 +1,181 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Usuarios{% endblock %}
+{% block stylesheets %}
+    {{parent()}}
+    <style>
+       
+    </style>
+{% endblock %}
+{% block body %}
+<div class="card" style="overflow:auto">
+    <div class="card-header">
+        <div class="row">
+                <div class="col-sm-10">
+                    <h3><i class="fa-solid fa-user-tie"></i>&nbsp;Usuarios</h3>
+                    <p class="text-muted h6 m-b-10 mt-3">Listado de usuarios registrados en el sistema</p>
+                </div>
+                <div class="col-sm-2">
+                    <a href="{{ path('app_usuario_new') }}"><button class="btn btn-inverse btn-inverse-jag btn-outline-inverse"><i class="ti-user">+</i>&nbsp;Crear un nuevo usuario</button></a>   
+                </div>           
+        </div>
+    </div>
+    <br>
+
+    <div class="card-block">
+        <table class="table table-hover" id="userTable">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Cuil</th>
+                    <th>Nombre y apellido</th>
+                    <th>Dependencia y Repartición</th>
+                    <th>Activo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for usuario in usuarios %}
+                <tr>
+                    <td>{{ usuario.email }}</td>
+                    <td>{{ usuario.cuil }}</td>
+                    <td>{{ usuario.nombre|upper|raw }} {{ usuario.apellido|upper|raw }}</td>
+                    <td class="td-overflow">
+                        
+                        {% if usuario.dependencia %}
+                            {{usuario.dependencia.nombre|raw}}
+                        {% else %}
+                            -----
+                        {% endif %}
+                    <br>
+                    {% if usuario.reparticion %}
+                        <b style="color:dimgray">{{usuario.reparticion.nombre|raw}}</b>
+                    {% else %}
+                        -----
+                    {% endif %}
+                    </td>
+                    <td>{% if usuario.activo == 1 %}
+                                Si
+                        {% else %}
+                                No
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="dropdown-primary dropdown open">
+                            <button class="btn btn-inverse btn-inverse-jag btn-outline-inverse dropdown-toggle waves-effect waves-light " type="button" id="dropdown-2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Acciones</button>
+                            <div class="dropdown-menu" aria-labelledby="dropdown-2" data-dropdown-in="fadeIn" data-dropdown-out="fadeOut">
+                                <a class="dropdown-item waves-light waves-effect" href="{{ path('app_usuario_show', {'id': usuario.id}) }}">Ver detalles</a>
+                                <a class="dropdown-item waves-light waves-effect" href="{{ path('app_usuario_edit', {'id': usuario.id}) }}">Editar</a>
+                                <div class="dropdown-divider"></div>
+                                {% if usuario.activo == 1 %}
+                                    <a class="dropdown-item waves-light waves-effect cambiarActivo" href="{{ path('app_usuario_cambiar_activo', {'id': usuario.id}) }}" >Desactivar cuenta</a>
+                                {% else %}
+                                    <a class="dropdown-item waves-light waves-effect cambiarActivo" href="{{ path('app_usuario_cambiar_activo', {'id': usuario.id}) }}" >Activar cuenta</a>
+                                {% endif %}
+                                <a class="dropdown-item waves-light waves-effect borrarUser" href="{{ path('app_usuario_delete', {'id': usuario.id}) }}"  >Eliminar</a>
+                                <input type="text" value="{{usuario.id}},{{usuario.email}}" style="display:none">
+                                <a class="dropdown-item waves-light waves-effect resetPass" href="{{ path('app_pass_reset',{'id': usuario.id}) }}" >Restablecer Contraseña</a>
+                                
+                            </div>
+                        </div>
+                        
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td >No se encontraron usuarios</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+
+
+
+{% endblock %}
+{% block javascripts %}
+    {{parent()}}
+    <script>
+        $(document).on("click",".resetPass",function(event){
+            var url= $(this).attr("href");
+            $(this).attr("href","#");
+            let userData= $(this).prev().val().split(",");
+            let userName= userData[1]; 
+            modalClear();
+            modalSetTitle("<i class='ti-alert'></i>&nbsp;Esta acción requiere confirmación");
+            modalLoadContent("<div style='display:flex; flex-direction:column; row-gap:1em; align-items:center; padding:1em;'>"+
+                                "<h4>Está a punto de reiniciar la contraseña de la cuenta &nbsp;'<b style='color:royalblue'>"+userName+"</b>'&nbsp;</h4>"+
+                                "<p style='text-align:center; width:59%; font-size:normal'>Al Reiniciarla, se cambiará la contraseña actual por el DNI asociado a la cuenta seleccionada.</p>"+
+                                "<h5>¿Desea Continuar?</h5>"+
+                                "<a href='"+url+"'><button class='btn btn-inverse btn-inverse-jag btn-outline-inverse'><i class='ti-lock'><i class='ti-reload' style='font-size:9px'></i></i>&nbsp;Reiniciar Contraseña</button></a><br>"+
+                             "</div>"
+            );
+            modalFadeIn();
+        });
+        $(document).on("click",".cambiarActivo",function(event){
+            var url= $(this).attr("href");
+            $(this).attr("href","#");
+            let userData= $(this).next().next().val().split(",");
+            let userName= userData[1]; 
+            modalClear();
+            modalSetTitle("<i class='ti-alert'></i>&nbsp;Esta acción requiere confirmación");
+            modalLoadContent("<div style='display:flex; flex-direction:column; row-gap:1em; align-items:center; padding:1em;'>"+
+                                "<h4>Está a punto de cambiar el estado de la cuenta &nbsp;'<b style='color:royalblue'>"+userName+"</b>'&nbsp;</h4>"+
+                                "<label style='text-align:center;'>Antes de proceder, tenga en cuenta que :</label>"+
+                                "<ul class='col-md-7 p-2' style='list-style-type:circle;'>"+
+                                "<li style='text-align:left;'>Las cuentas activas tienen pleno acceso a la plataforma bajo el rol asignado</li>"+
+                                "<li style='text-align:left;'>Las cuentas en estado inactivo (o desactivadas), no podrán ser utilizadas ingresar a la plataforma, puede revertir el proceso utilizando esta misma opción</li>"+
+                                "</ul><br>"+
+                                "<h5>¿Desea Continuar?</h5>"+
+                                "<a href='"+url+"'><button class='btn btn-inverse btn-inverse-jag btn-outline-inverse'><i class='ti-check'></i>&nbsp;Conformar el cambio de estado</button></a><br>"+
+                             "</div>"
+            );
+            modalFadeIn();
+        });
+        $(document).on("click",".borrarUser", function(event){
+            var url = $(this).attr("href");
+            $(this).attr("href","#");
+            let userData= $(this).next().val().split(",");
+            let userName= userData[1]; 
+            modalClear();
+            modalSetTitle("<i class='ti-alert'></i>&nbsp;Esta acción requiere confirmación");
+            modalLoadContent("<div style='display:flex; flex-direction:column; row-gap:1em; align-items:center; padding:1em;'>"+
+                                "<h4>Está a punto de borrar al usuario &nbsp;'<b style='color:royalblue'>"+userName+"</b>'&nbsp;, ¿Esta seguro/a?</h4>"+
+                                "<a href='"+url+"'><button class='btn btn-inverse btn-inverse-jag btn-outline-inverse'><i class='ti-check'></i>&nbsp;Confirmar</button></a>"+
+                             "</div>"
+            );
+            modalFadeIn();
+        });
+        setTimeout(() => {          
+            $('#userTable').DataTable({
+                    "language": {
+                        "sProcessing":     "Procesando...",
+                        "sLengthMenu":     "Mostrar _MENU_ usuarios",
+                        "sZeroRecords":    "No se encontraron resultados",
+                        "sEmptyTable":     "Ningún dato disponible en esta tabla",
+                        "sInfo":           "Mostrando usuarios del _START_ al _END_ de un total de _TOTAL_ usuarios",
+                        "sInfoEmpty":      "Mostrando usuarios del 0 al 0 de un total de 0 usuarios",
+                        "sInfoFiltered":   "(filtrado de un total de _MAX_ usuarios)",
+                        "sInfoPostFix":    "",
+                        "sSearch":         "Buscar:",
+                        "sUrl":            "",
+                        "sInfoThousands":  ",",
+                        "sLoadingRecords": "Cargando...",
+                        "oPaginate": {
+                            "sFirst":    "Primero",
+                            "sLast":     "Último",
+                            "sNext":     "Siguiente",
+                            "sPrevious": "Anterior"
+                        },
+                        "oAria": {
+                            "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+                            "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                        }
+                    }
+            });
+         }, 500);
+    </script>
+{% endblock %}

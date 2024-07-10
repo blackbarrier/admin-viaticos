@@ -1,0 +1,89 @@
+input[type=text]:focus:not([readonly]), input[type=password]:focus:not([readonly]), input[type=email]:focus:not([readonly]), input[type=url]:focus:not([readonly]), input[type=time]:focus:not([readonly]), input[type=date]:focus:not([readonly]), input[type=datetime-local]:focus:not([readonly]), input[type=tel]:focus:not([readonly]), input[type=number]:focus:not([readonly]), input[type=search]:focus:not([readonly]), textarea.materialize-textarea:focus:not([readonly]) {
+    border: 0px solid #fff;
+    border-bottom: 1px solid #007a8a;
+    box-shadow: 0 1px 0 0 #007a8a;
+}
+input[type="text"]:focus, input[type="password"]:focus, textarea:focus, textarea.form-control:focus {
+    outline: 0;
+    background: #fff;
+    border: 3px solid #ccc;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+.loginCard {
+    position: relative;
+    overflow: hidden;
+    margin: 0.5rem 0 1rem 0;
+    background-color: #fff;
+    border-radius: 4px;
+}
+
+.backstretch{
+    background: linear-gradient(-27deg, #009ce9, transparent);
+}
+#loginForm{
+    display:flex;
+    flex-direction:column;
+    flex-direction:column;
+    row-gap:1em;
+    align-items:center;
+    padding:10px;
+    border-top: 1px dotted rgba(0,0,0,0.2);
+    margin-top:1em;
+}
+#loginForm form{
+    width:100%;
+    display:Flex;
+    flex-direction:column;
+    row-gap:1em;
+    align-items:center;
+}
+#loginForm > form > div{
+    display:flex;
+    flex-direction:column;
+    row-gap:1em;
+    align-items:center;
+    width:90%;
+}
+#loginForm > label{
+    min-width:100%;
+    font-size:medium;
+    text-align:center;
+}
+#loginForm  input{
+    min-width:100%;
+    color:#009aae;
+    padding-left:5px;
+}
+#loginForm .btn{
+    background: #009aae;
+}
+#loginForm .btn:hover{
+    background: #04b1c8;
+}
+.titleFont{
+    color:#009aae;
+    letter-spacing:2px;
+    font-weight:bold;
+    font-size:medium;
+    width:100%;
+    text-align:center;
+    padding:1em;
+}
+.leyendaLogin{
+    color:#009aae;
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    row-gap:0.5em;
+    padding:1em;
+}
+#login-form-wrapper{
+    padding:1em;
+    height:fit-content;
+}
+#logo > img{
+    margin:0 auto;
+}

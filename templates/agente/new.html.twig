@@ -1,0 +1,138 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Viáticos - Nuevo Agente{% endblock %}
+{% block stylesheets %}
+    {{parent()}}
+    <style>
+       
+      
+    </style>
+{% endblock %}
+{% block body %}
+    <div id="loaderB"></div>
+    <div class="card" style="overflow:auto">
+        <div class="card-header"> 
+            <div class="row">
+                <div class="col-sm-10">
+                    <h3>Nuevo Agente</h3>
+                </div>        
+            </div>
+        </div>
+        <div class="card-block">
+            {{ include('agente/_form.html.twig') }}
+        </div>
+    </div>
+
+          
+    
+        
+{% endblock %}
+{% block javascripts %}
+    {{parent()}}
+    <script>
+
+        $(document).ready(function () {
+            $("select").select2({ "theme": "classic" });
+            setTimeout(() => {
+                $(".select2-selection__arrow").css("min-height", "35px");
+            }, 200);
+
+            function ocultar() {
+                if ($("#agente_externo").val() == "1") {
+                    $("#col_reparticion").show("slow");
+                }
+                else {
+                    $("#col_reparticion").hide("slow");
+                }
+            }
+            ocultar();
+            $("#agente_externo").on("change", function () {
+                ocultar();
+            });
+        });   
+    </script>
+    <script>
+            //Validacion DNI y CUIL
+            $('form[name="agente"]').on("submit",function(event){
+
+                var numeroDocumento = $("#agente_numeroDocumento").val()
+                var cuil = $("#agente_cuil").val()
+
+                if(!cuil.includes(numeroDocumento)) {
+                
+                    event.preventDefault();
+                    modalClear();
+                    modalSetTitle("El campo CUIL y DNI deben ser coincidentes.");
+                    modalAddContent("<div style='display:flex;flex-direction:column; align-items:center; justify-content:center;padding:10px;font-size:18px;'>"
+                    +"<p>El campo CUIL y DNI deben ser coincidentes.</p></div>");
+                    modalFadeIn();
+                }
+                });
+    </script>
+
+     
+    <script>
+            // Select the last td element from the table
+            $('#agente_id').attr("type","number");
+            $('form[name="agente"]').on("submit",function(event){            
+                if($("#agente_nombre").val() == "" || $("#agente_apellido").val() == "" || $("#agente_legajo").val() == "" || $("#agente_numeroDocuemento").val()  == "" || $("#agente_genero").val() == "" || $("#agente_cuil").val() == "" || $("#agente_categoria").val() == "" || $("#agente_externo").val() == ""|| $("#agente_reparticion").val() == ""|| $("#agente_dependencia").val() == "") {
+                    event.preventDefault();
+                    modalClear();
+                    console.log("Nombre:'"+$("#agente_nombre").val()+"'","apellido:'"+$("#agente_apellido").val()+"'","legajo:'"+ $("#agente_legajo").val()+"'","numeroDocumento:'"+ $("#agente_numeroDocumento").val()+"'","genero:'"+$("#agente_genero").val()+"'","cuil:'"+$("#genero_cuil").val()+"'","categoria:'"+ $("#agente_categoria").val()+"'","categoria:'"+ $("#agente_externo").val()+"'" + $("#agente_reparticion").val()+"'" + $("#agente_dependencia").val()+"'");
+                    modalSetTitle("Complete los campos obligatorios");
+                    modalAddContent("<div style='display:flex;flex-direction:column; align-items:center; justify-content:center;padding:10px;font-size:18px;'>"
+                    +"<p>Debe proporcionar al menos un <b>Nombre</b>, un <b>Apellido</b>, un <b>Legajo</b>, un <b>DNI </b>, un <b>Género</b>, un <b>Cuil </b>, una <b>Categoria</b>, si es <b>Externo</b>, una <b>Reparticion</b>, una  <b>Dependencia</b> para continuar.</p></div>");
+                    modalFadeIn();
+                }
+            });
+    </script>
+    
+    <script>
+        //Al seleccionar agente "externo" se visualiza elemento select "Reparticion".
+
+        // $(document).ready(function () {
+        //     function ocultar() {
+        //         if ($("#agente_externo").val() == "1") {
+        //             $("#col_reparticion").show("slow",);
+        //         }
+        //         else {
+        //             $("#col_reparticion").hide("slow");
+        //         }
+        //     }
+        //     ocultar();
+        //     $("#agente_externo").on("change", function () {
+        //         ocultar();                
+        //     }); 
+        // });   
+    </script>
+    <script>
+        // Se carga el contenido del select "Depenedencia" con la Reparticion seleccionada
+
+        // $("#reparticiones").on("change",function(){
+        //     var idReparticion = $(this).val();
+        //     $("#dependencias").html("");
+        //     $("#loaderB").html('<div class="theme-loader"><div class="loader-track"><div class="loader-bar"></div></div></div>');
+                        
+        //     $.ajax({
+        //         type: "POST",
+        //         url: "{{ path('app_reparticion_get_dependencia') }}",
+        //         data: {"idReparticion":idReparticion},
+        //         dataType: "Json",
+        //         success: function (response) {
+        //             console.log(response, idReparticion);
+        //             response.forEach(element => {
+        //                 $("#dependencias").append("<option value="+element.id+">"+element.nombre+"</option>")
+        //             });
+        //             $(".theme-loader").animate({
+        //                 opacity: "0"
+        //             },1000); 
+        //             $(".theme-loader").remove();    
+        //         }
+        //     });
+
+            
+
+        // })
+    </script>
+{% endblock %}
+ 

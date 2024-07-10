@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Info Repartición{% endblock %}
+
+{% block body %}
+
+    <div id="loaderB"></div>
+    <div class="card" style="overflow:auto">
+    
+        <div class="card-header">
+            <div class="row">
+
+                
+                <div class="col-sm-10">
+                    <h3><i class="ti-user"></i>&nbsp; <b>Agente {{agente}}</b></h3>
+                    <p class="text-muted h6 m-b-10 mt-3">Historial de viáticos</p>
+                </div>
+                
+                <div class="col-sm-2">
+                    <a href="{{path('app_info_reparticion_index')}}">
+                        <button class="btn btn-inverse btn-inverse-jag btn-inverse-jag btn-outline-inverse" style="width: 100%;">
+                            <i class="ti-back-left"></i>&nbsp;Volver</button></a>
+                </div>
+                
+               
+    
+            </div>
+        </div>
+    
+        <br>
+        <div class="card-block">
+                
+            <table class="table">
+                <tbody>
+
+                    {% for viatico in viaticos %}                        
+                    <tr>
+
+                        <th>{{ viatico.id }}</th>
+
+                        <td>{{ viatico.fechaPedido|date('Y/m/d H:i:s') }}</td>                    
+                       
+                        <td>{{ viatico.importe }}</td>                    
+                        
+                        <td>{{ viatico.operador.dni }}</td>                    
+                        
+                        <td>{{ viatico.estado.nombre }}</td>                    
+                        
+                        <td>{{ viatico.mes }}</td>                    
+                      
+                        <td>{{ viatico.anio }}</td>                    
+
+                    </tr>                    
+                    {% endfor %}
+
+                </tbody>
+            </table>
+            
+            
+    
+        </div>
+        
+        {% endblock %}
+        

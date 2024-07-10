@@ -1,0 +1,37 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Bienvenido/a{% endblock %}
+{% block stylesheets %}
+{{parent()}}
+{% endblock %}
+
+{% block body %}
+    {% set arrayRoles = app.user.fetchRoles() %}
+    {% if 'ROLE_SUPER_ADMIN' in arrayRoles %}    
+        Bienvenido/a Super Administrador        
+    {% else %}
+        {% if 'ROLE_ADMIN' in arrayRoles %}
+                Bienvenido/a Administrador 
+        {% else %}
+            {% if 'ROLE_LIQUIDACIONES' in arrayRoles %}
+                Bienvenido/a Usuario de Liquidaciones
+            {% else %}
+                {% if 'ROLE_CONTABLE' in arrayRoles %}
+                        Bienvenido/a Usuario de Contabilidad
+                {% else %}
+                    {% if 'ROLE_DEPENDENCIA' in arrayRoles %}
+                            Bienvenido/a Usuario de Dependencias
+                    {% else %}
+                        {% if 'ROLE_TESORERIA' in arrayRoles %}
+                                Bienvenido/a Usuario de Tesoreria
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block javascripts %}
+    {{parent()}}
+{% endblock %}

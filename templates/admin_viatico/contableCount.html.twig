@@ -1,0 +1,162 @@
+{% extends "base.html.twig"%}
+{% block title%}Viaticos Digitales - Inicio{% endblock %}
+{% block stylesheets %}
+    {{parent()}}
+
+    <style>
+  
+</style>
+{% endblock %}
+
+
+{% block body %}
+    <div class="card p-3" style="overflow:auto" >
+
+        <div class="card-header mt-6" style="display:flex; flex-direction:row; align-items:center; justify-content:space-between">
+            <h2 >Viáticos a autorizar</h2>
+        </div>
+
+        <div class="card-block">
+
+                {% if viaticos %}
+                    <div class="col-md-12 col-lg-4">
+                        <h6 class="sub-title">Viáticos a autorizar por delegacion</h6>
+                        <ul class="basic-list">
+                        {% for viatico in viaticos %}
+                            <li class="">
+                                <a href="{{ path('app_contable_index', {'dependencia':viatico.dependencia}) }}" class="d-inline-block">
+                                    <h5>{{ viatico.dependencia }}</h5>
+                                </a>
+                                <label class="badge badge-inverse-primary ml-2 float-right">{{ viatico.cantViaticos }}</label>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    </div>      
+                {% else %}
+                <h4 style="color:#009aae; text-align:center">No se encontraron viáticos recientes</h4>
+                {% endif %}
+                                    
+                                    {# <div>
+                                    <a href="{{ path('app_contable_index', {'dependencia':viatico.dependencia}) }}" display="block" >
+                                    <p class="lead m-t-0">{{viatico.dependencia}}</p>                        
+                                    </a>                        
+                                    <i class="icofont icofont-double-right text-success"></i><label class="badge badge-inverse-primary">{{viatico.cantViaticos}}</label>
+                                    </div> #}
+                              
+                    
+
+        </div>                
+            
+    </div>
+        
+
+
+
+
+{% endblock %}
+
+{% block javascripts %}
+    {{parent()}}
+    <script>
+
+             $(document).ready(function () {
+            $('#miTabla').DataTable({
+                "border": "1px solid #222222",
+                "border-radius": "3px",
+                "autoWidth": true,
+                "language": {
+                "sProcessing": "Procesando...",
+                "sLengthMenu": "Mostrar _MENU_ usuarios",
+                "sZeroRecords": "No se encontraron resultados",
+                "sEmptyTable": "Ningún dato disponible en esta tabla",
+                "sInfo": "Mostrando usuarios del _START_ al _END_ de un total de _TOTAL_ usuarios",
+                "sInfoEmpty": "Mostrando usuarios del 0 al 0 de un total de 0 usuarios",
+                "sInfoFiltered": "(filtrado de un total de _MAX_ usuarios)",
+                "sInfoPostFix": "",
+                "sSearch": "Buscar:",
+                "sUrl": "",
+                "sInfoThousands": ",",
+                "sLoadingRecords": "Cargando...",
+                "oPaginate": {
+                    "sFirst": "Primero",
+                    "sLast": "Último",
+                    "sNext": "Siguiente",
+                    "sPrevious": "Anterior"
+                },
+                "oAria": {
+                    "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                    "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                }
+            }
+        });
+
+        }, 500); 
+    </script>
+
+    <script>
+    //Marca los autorizados y los envia
+         document.addEventListener('DOMContentLoaded', function () {
+                var arrayAutorizados = []; // Array para almacenar los IDs de los checkboxes marcados
+                var arrayAnticipos = [];
+
+                // Obtener todos los elementos checkbox con la clase 'autorizado'
+                var checkAutorizado = document.querySelectorAll('.autorizado');
+                var checkAnticipo = document.querySelectorAll('.anticipo');
+
+                // Iterar sobre cada checkbox para agregar un evento de cambio (cuando se marca/desmarca)
+                checkAutorizado.forEach(function (checkbox) {
+                    checkbox.addEventListener('change', function () {
+                        // Verificar si el checkbox está marcado
+                        if (this.checked) {
+                            // Obtener el ID del checkbox y agregarlo al array
+                            var checkboxId = this.id;
+                            arrayAutorizados.push(checkboxId);
+                        } else {
+                            // Si se desmarca, remover el ID del checkbox del array
+                            arrayAutorizados = arrayAutorizados.filter(id => id !== this.id);
+                        }
+
+                        // Mostrar el contenido actual del array en la consola (opcional, para verificar)
+                    });
+                });
+
+                checkAnticipo.forEach(function (checkbox) {
+                    checkbox.addEventListener('change', function () {
+                        // Verificar si el checkbox está marcado
+                        if (this.checked) {
+                            // Obtener el ID del checkbox y agregarlo al array
+                            var checkboxId = this.id;
+                            arrayAnticipos.push(checkboxId);
+                        } else {
+                            // Si se desmarca, remover el ID del checkbox del array
+                            arrayAnticipos = arrayAnticipos.filter(id => id !== this.id);
+                        }
+                        // Mostrar el contenido actual del array en la consola (opcional, para verificar)
+                    });
+                });
+
+
+                //Boton Agregar agentes
+                document.getElementById('autorizar_viaticos').addEventListener('click', function () {
+
+                    //Incorporar datos a un array.
+                    var hiddenElement = document.getElementById('arrayAutorizados');
+                    hiddenElement.value = (JSON.stringify(arrayAutorizados));
+                                        
+                });
+
+                //Boton Agregar agentes
+                document.getElementById('autorizar_viaticos').addEventListener('click', function () {
+
+                    //Incorporar datos a un array.
+                    var hiddenElement = document.getElementById('arrayAnticipos');
+                    hiddenElement.value = (JSON.stringify(arrayAnticipos));
+                                        
+                });
+
+
+            });
+    
+    </script>
+
+{% endblock %}

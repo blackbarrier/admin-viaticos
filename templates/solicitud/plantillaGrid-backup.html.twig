@@ -1,0 +1,506 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Crear Solicitud de Viáticos{% endblock %}
+
+{% block stylesheets %}
+    {{parent()}}
+    <style>  
+      #solicitudes{
+        height:fit-content;
+        height:80vh;
+        overflow:auto;
+        padding:1em;
+      }
+      #postBlock{
+        display:none;
+        position:absolute;
+        flex-direction:row;
+        align-items:center;
+        justify-content:space-between;
+        bottom:10px;
+        right:2em;
+        left:2em;
+        width:90%;
+        margin:0 auto;
+      }
+      .wrapper{
+        margin-top:5em;
+      }
+      
+      #formArea{
+        display:flex;
+        flex-direction:row; 
+        column-gap:1em; 
+        align-items:center; 
+        justify-content:space-between;
+      }
+      #requestData{
+        display:none;
+      }
+      .ti-alert{
+        font-weight: bold;
+        font-size: 16px;
+        /*color: yellow;
+        filter: drop-shadow(0.5px 0.5px 3px black);
+        background: darkorange;*/
+        border-radius: 35%;
+        padding: 5px;
+        margin-right: 4px;
+      }
+      #after{
+       display:flex;
+       flex-direction:row;
+       justify-content:center;
+       align-items:center;
+      }
+    </style>
+{% endblock %}
+{% block body %}
+       <div class="wrapper">
+        
+        <div class="col-sm-12">
+            <div class="row card p-5" style="position:relative">
+            <div class="card-header">
+            <h4><i class="ti-list" id="tituloSeccion"></i>&nbsp;&nbsp;Solicitar viáticos</h4> 
+        </div>
+            <div id="after"></div>
+        {% if plantillas != null %}
+             <div id="formArea" class="row">
+                <div class="col">
+                   <div class="row">
+                        <label>Seleccione el mes del viatico:</label>
+                        <select class="form-control" id="mes" name="mes">
+                        {% set monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"] %}
+                        {% set currentMonth = "now"|date("n") %}
+                         {% for i in 1..12 %}
+                            <option value="{{ i }}" {% if i == currentMonth %} selected{% endif %}>{{ monthNames[i - 1] }}</option>
+                        {% endfor %}
+                        {#}    <option value="01">Enero</option>
+                            <option value="02">Febrero</option>
+                            <option value="03">Marzo</option>
+                            <option value="04">Abril</option>
+                            <option value="05">Mayo</option>
+                            <option value="06">Junio</option>
+                            <option value="07">Julio</option>
+                            <option value="08">Agosto</option>
+                            <option value="09">Septiembre</option>
+                            <option value="10">Octubre</option>
+                            <option value="11">Noviembre</option>
+                            <option value="12">Diciembre</option>#}
+                        </select>
+                    </div>
+                </div>    
+                <div class="col">
+                    <div class="row">
+                        <label>Seleccione el año del viático :</label>
+                            {% set currentMonth = "now"|date("m") %}
+                            
+                        <select class="form-control" id="anio" name="anio">
+                            <option value="{{ 'now'|date('Y') }}" selected>{{ 'now'|date('Y') }}</option>
+                            {% if currentMonth == '12' %}
+                                {% set nextYear = 'now'|date('Y') + 1 %}
+                                <option value="{{nextYear}}">{{nextYear}}</option>
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>            
+                <div class="col">
+                    <div class="row">
+                        <label>Seleccione la plantilla a utilizar:</label>
+                        <select class="form-control" id="plantillaSelect" name="plantillaSelect">
+                        {% for plantilla in plantillas %}
+                            <option value="{{plantilla.id}}">{{plantilla.identificacion}} ({{plantilla.fechaCreacion|date('d/m/Y H:i')}} hs)</option>
+                        {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div style="display:flex; flex-direction:row; width:100%; align-items:center; padding:2em; justify-content:center;">
+                    <button class="btn btn-inverse btn-inverse-jag btn-outline-inverse" id="requestV"><i class="ti-check-box"></i>&nbsp;Generar Solicitud</button>                
+                </div>                
+            </div>
+            
+            <hr style="border:1px dotted lightgray; width:100%;">
+            <div id="solicitudes" class="ag-theme-quartz"></div>
+            <div id="postBlock">                   
+                <div><span style="font-weight:bold">Monto total de viatico:</span>&nbsp;<span class="label label-inverse">$<span id='impTotal'></span></span></div>
+                <button class="btn btn-inverse btn-inverse-jag btn-outline-inverse" id="postResult"><i class="ti-check-box"></i>&nbsp;Solicitar Viáticos</button>
+            </div>
+        {% else %}
+                <div>
+                <label class="label label-warning" style="font-size:1.3em"><i class="ti-alert" style="color:yellow; text-shadow:1px 1px 4px darkorange;"></i>&nbsp;El servicio no encontró ninguna plantilla de agentes creada, por favor cree una antes de realizar la solicitud de un viático</label      >
+            </div>
+            <div id="postBlock">  
+            </div>                      
+        {% endif %}
+                
+            </div>
+        </div>
+      </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{parent()}}
+    <script>
+        let gridApi;
+        let rowData;
+        let columnDefs;
+        let importeTotal = 0;
+        const gridDiv = $('#solicitudes');
+
+        function total() {
+            importeTotal = 0;
+            gridApi.forEachNode((node) => {
+                if(node.data.importe > 0 )
+                    importeTotal += node.data.importe
+            });
+            document.getElementById('impTotal').innerHTML = importeTotal;
+        }
+
+        /**
+         * Calcula la suma total del campo importe 
+         * y lo pone como pinned data
+         * @param {*} api 
+         */
+        function totalRow(api) {
+            let result = [{}];
+            items = [];
+            // initialize all total columns to zero
+            columnDefs.forEach(function (colDef){
+                if(colDef.cellDataType == 'number')
+                    result[0][colDef.field] = 0;
+            });
+            api.forEachNode(function(node) { 
+                let data = node.data;
+                //console.log(node);		
+                for (const field in data) {			
+                    if(isNumber(data[field])) {
+                        result[0][field] += data[field];
+                    }
+                }
+            });
+            api.updateGridOptions({ pinnedBottomRowData: result })
+            
+        }
+
+
+        function isNumber(value) {
+            return typeof value === 'number';
+        }
+
+
+        /**
+         * Retorna el importe para los porcentajes y modulo de este row
+         * @param {*} params 
+         * @returns number
+         */
+        function sumImporte(params) {
+            let modulo = params.getValue('modulo');
+            let dias150 = params.getValue('ciento_cincuenta');
+            let dias100 = params.getValue('cien');
+            let dias70 = params.getValue('setenta');
+            let dias50 = params.getValue('cincuenta');
+            let dias40 = params.getValue('cuarenta');
+            let dias20 = params.getValue('veinte');
+            let diasMovilidad = params.getValue('movilidad');
+            return (modulo * (dias150 * 1.5)) + (modulo * dias100) + (modulo * (dias70 * 0.7)) + (modulo * (dias50 * 0.5)) + (modulo * (dias40 * 0.4)) + (modulo * (dias20 * 0.2));
+            
+        }
+
+
+        function currencyFormatter(params) {
+            const value = Math.floor(params.value);
+        
+            if (isNaN(value)) {
+            return '';
+            }
+        
+            return '$' + value.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+        }
+
+       
+        
+       
+        
+        {% if plantillas != null %}
+            $(document).on("click",'#requestV',function(){
+                $("#after").html('<div class="theme-loader"><div class="loader-track"><div class="loader-bar"></div></div></div>');
+                $(".theme-loader").animate({
+                    opacity: "0"
+                },1000);
+                setTimeout(function() {
+                    $(".theme-loader").remove();                                    
+                }, 800);
+                if ($('#solicitudes').is(':empty')) {
+                    $("#solicitudes").css("height","80vh");
+                    let mes = $("#mes").val();
+                    let anio = $("#anio").val();
+                    let idPlantilla = $("#plantillaSelect").val();
+                    let nombrePlantilla =  $("#plantillaSelect").find(":selected").text();
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ path('app_solicitud_plantilla_ajax') }}",
+                        data: {"idPlantilla":idPlantilla},
+                        dataType: "Json",
+                        success: function (response) {   
+                            $("#impTotal").text(importeTotal);
+                            $("#postBlock").css("display","flex");
+                            $("#formArea").html('<div class="col">'+
+                                                        '<label> Solicitar viaticos para el mes: <b>'+mes+'-'+anio+'</b></label>'+
+                                                '</div>'+
+                                                '<div class="col">'+
+                                                        '<label> De la Plantilla de agentes bajo el nombre de : "<b> '+nombrePlantilla+' </b>"</label>'+
+                                                '</div>');
+                            const gridDiv = document.querySelector('#solicitudes');            
+                            rowData = response;
+                            //console.log(rowData);
+                            columnDefs = [
+                                {
+                                    headerName: 'Legajo',
+                                    field: 'legajo',
+                                    flex: 1
+                                },
+                                {
+                                    headerName: 'Nombre y Apellido',
+                                    field: 'nyap',
+                                    flex: 3,
+                                },
+                                {
+                                    headerName: 'Dependencia',
+                                    field: 'dep',
+                                    flex: 1
+                                },
+                                {
+                                    headerName: 'Categoria',
+                                    field: 'careg',
+                                    flex: 1
+                                },
+                                {
+                                    headerName: 'Modulo',
+                                    field: 'modulo',
+                                    'valueFormatter': p => '$' + Math.floor(p.value).toLocaleString(),
+                                    editable: true,
+                                    cellDataType: 'number',
+                                    cellEditor: 'agSelectCellEditor',
+                                    cellEditorParams: {
+                                        values: [8400.00, 9450.00, 10950.00],
+                                    },
+                                    onCellValueChanged: (event) => {
+                                        //var row = gridApi.getDisplayedRowAtIndex(event.node.rowIndex);
+                                        gridApi.redrawRows();
+                                        //totalRow(gridApi);
+                                        //console.log(event.node.rowIndex, row);
+                                    },
+                                    flex: 1
+                                },
+                                {
+                                    headerName: '150%',
+                                    field: 'ciento_cincuenta',
+                                    editable: true,
+                                    cellDataType: 'number',
+                                    onCellValueChanged: (event) => {
+                                        gridApi.redrawRows();
+                                        //totalRow(gridApi);
+                                    },
+                                    flex: 1
+                                },
+                                {
+                                    headerName: '100%',
+                                    field: 'cien',
+                                    editable: true,
+                                    cellDataType: 'number',
+                                    onCellValueChanged: (event) => {
+                                        gridApi.redrawRows();
+                                        //totalRow(gridApi);
+                                    },
+                                    flex: 1
+                                },
+                                {
+                                    headerName: '70%',
+                                    field: 'setenta',
+                                    editable: true,
+                                    cellDataType: 'number',
+                                    onCellValueChanged: (event) => {
+                                        gridApi.redrawRows();
+                                        //totalRow(gridApi);
+                                    },
+                                    flex: 1
+                                },
+                                {
+                                    headerName: '50%',
+                                    field: 'cincuenta',
+                                    editable: true,
+                                    cellDataType: 'number',
+                                    onCellValueChanged: (event) => {
+                                        gridApi.redrawRows();
+                                        //totalRow(gridApi);
+                                    },
+                                    flex: 1
+                                },
+                                {
+                                    headerName: '40%',
+                                    field: 'cuarenta',
+                                    editable: true,
+                                    cellDataType: 'number',
+                                    onCellValueChanged: (event) => {
+                                        gridApi.redrawRows();
+                                        //totalRow(gridApi);
+                                    },
+                                    flex: 1
+                                },
+                                {
+                                    headerName: '20%',
+                                    field: 'veinte',
+                                    editable: true,
+                                    cellDataType: 'number',
+                                    onCellValueChanged: (event) => {
+                                        gridApi.redrawRows();
+                                        //totalRow(gridApi);
+                                    },
+                                    flex: 1
+                                },
+                                {
+                                    headerName: 'Movilidad',
+                                    field: 'movilidad',
+                                    cellDataType: 'number',
+                                    flex: 1
+                                },
+                                {
+                                    headerName: 'Importe',
+                                    field: 'importe',
+                                    editable: false,
+                                    cellDataType: 'number',
+                                    editable: false,
+                                    cellClass: 'total-col',
+                                    onCellValueChanged: (event) => {
+                                        gridApi.redrawRows();
+                                        totalRow(gridApi);
+            
+                                    },
+                                    valueGetter: (params) => {
+                                        let importe = sumImporte(params);					
+                                        params.data.importe = importe;
+                                        total();
+                                        return importe;
+                                    },		
+                                    valueFormatter: currencyFormatter,
+                                    flex: 1
+                                },
+                                
+                            ]; 
+                            const gridOptions = {
+                                pagination: false,
+                                enableCellChangeFlash: true,
+                                //suppressAggFuncInHeader: true,
+                                rowData: rowData,	
+                                columnDefs: columnDefs,	
+                            };
+                            gridApi = agGrid.createGrid(gridDiv, gridOptions);
+                            //console.log(gridApi);
+                            
+                            $(document).on('click','#postResult',function () {                                
+                                let arrayViaticos = [];
+                                gridApi.forEachNode((node) => {
+                                    if(node.data.importe > 0 )
+                                        arrayViaticos.push(node.data);
+                                        console.log(node.data);
+                                });
+                                if(Array.isArray(arrayViaticos) && arrayViaticos.length != 0){
+                                    Jstring = JSON.stringify({"viaticos":arrayViaticos});
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "{{ path('app_solicitud_alta_viaticos_ajax') }}",
+                                        data: {viaticos:arrayViaticos,mes:mes,anio:anio},
+                                        dataType: "Json",
+                                        success: function (response) {
+                                            console.log(response);
+                                            document.querySelector('#solicitudes').innerHTML='<h4 style="color:#009aae; padding:1em; margin:0 auto;"> Se Solicitaron los siguientes viáticos:</h3>'+
+                                                                '<table class="table table-stripped table-hover">'+
+                                                                    '<thead>'+
+                                                                        '<tr>'+ 
+                                                                            '<th>Legajo</th>'+
+                                                                            '<th>Nombre y Apellido</th>'+
+                                                                            '<th>Dependencia</th>'+
+                                                                            '<th>Categoría</th>'+
+                                                                            '<th>Módulo</th>'+
+                                                                            '<th>150%</th>'+
+                                                                            '<th>100%</th>'+
+                                                                            '<th>70%</th>'+
+                                                                            '<th>50%</th>'+
+                                                                            '<th>40%</th>'+
+                                                                            '<th>20%</th>'+
+                                                                            '<th>Movilidad</th>'+
+                                                                            '<th>Importe</th>'+
+                                                                        '</tr>'+
+                                                                    '</thead>'+
+                                                                    '<tbody id="tableContents"></tbody>'+
+                                                                    '<tfoot>'+
+                                                                        '<tr>'+
+                                                                            '<th></th>'+
+                                                                            '<th></th>'+
+                                                                            '<th></th>'+
+                                                                            '<th></th>'+
+                                                                            '<th></th>'+
+                                                                            '<th></th>'+
+                                                                            '<th></th>'+
+                                                                            '<th></th>'+
+                                                                            '<th></th>'+
+                                                                            '<th></th>'+
+                                                                            '<th></th>'+
+                                                                            '<th></th>'+
+                                                                            '<th></th>'+
+                                                                        '</tr>'+
+                                                                    '</tfoot>'+
+                                                                '</table>';
+                                            var content;
+                                            response.forEach(element => {
+                                                 content = "<tr>"+
+                                                                "<td>"+element.legajo+"</td>"+
+                                                                "<td>"+element.nyap+"</td>"+
+                                                                "<td>"+element.dep+"</td>"+
+                                                                "<td>"+element.careg+"</td>"+
+                                                                "<td><b>$ "+element.modulo+"</b></td>"+
+                                                                "<td>"+element.ciento_cincuenta+"</td>"+
+                                                                "<td>"+element.cien+"</td>"+
+                                                                "<td>"+element.setenta+"</td>"+
+                                                                "<td>"+element.cincuenta+"</td>"+
+                                                                "<td>"+element.cuarenta+"</td>"+
+                                                                "<td>"+element.veinte+"</td>"+
+                                                                "<td>"+element.movilidad+"</td>"+
+                                                                "<td><b>$ "+element.importe+"</b></td>"+
+                                                           "</tr>";
+                                                $("#tableContents").append(content);
+                                            });
+                                            $('#solicitudes').css("border","1.5px solid dimgray");
+                                            $('#solicitudes').css("padding","1em");
+                                            $("#postResult").css("display","none");
+                                            $("#postResult").attr('disabled',"true");
+                                             $('html').animate({
+                                                scrollTop: $(".pcoded-inner-navbar").offset().top
+                                            }, 800); // Adjust the speed as needed
+                                           $("#after").html('<div class="theme-loader"><div class="loader-track"><div class="loader-bar"></div></div></div>');
+                                           $("#after").append("<a href='"+"{{ path('app_solicitud_generar_plantilla')}}"+"'><button class='btn btn-inverse btn-inverse-jag btn-outline-inverse'><i class='ti-back-right'></i>&nbsp;Generar otra solicitud</button></a>");
+                                           $(".theme-loader").animate({
+                                                opacity: "0"
+                                            },2000);
+                                            setTimeout(function() {                                                
+                                                $(".theme-loader").remove();
+                                            }, 2000);
+                                        }
+                                    });
+                                }else{
+                                    modalSetTitle("<i class='fa-solid fa-triangle-exclamation'></i>&nbsp;Error");
+                                    modalLoadContent("<div style='display:flex; flex-direction:column; justify-content:center;align-items:center; padding:1em;'>"+
+                                                         "<h6 style='font-weight:bold'>Debe incluir al menos un viático con algun valor definido para realizar la solicitud</h6>"+   
+                                                    "</div>");
+                                    modalFadeIn();
+                                }
+                                
+                            });
+                        }   
+                    });
+                }
+            })
+        {% endif %}
+    
+</script>
+{% endblock %}

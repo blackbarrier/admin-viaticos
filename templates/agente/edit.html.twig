@@ -1,0 +1,123 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Viáticos - Editar Usuario{% endblock %}
+
+{% block stylesheets %}
+    {{parent()}}
+    <style>
+        
+    </style>
+{% endblock %}
+{% block body %}
+<div id="loaderB"></div>
+<div class="card mt-5 p-3">
+    <div class="card-header" style="display:flex; flex-direction:row; align-items:center; justify-content:space-between">
+        <h4><i class="fa-solid fa-user-tie"></i><i class="fa-solid fa-pencil" style="font-size:0.5em"></i>&nbsp;
+            Editar el Agente&nbsp;"<b> {{agente.nombre}}&nbsp;{{agente.apellido}} </b>"
+        </h4>
+        <a href="{{ path('app_agente_index') }}">
+            <button class="btn btn-inverse btn-inverse-jag btn-outline-inverse">
+                <i class="ti-share"></i>&nbsp;Volver al listado
+            </button>
+        </a>
+    </div>
+    <div class="card-block mt-3">
+    {{ include('agente/_form.html.twig') }}
+    </div>
+</div>
+
+{% endblock %}
+{% block javascripts %}
+    {{parent()}} 
+     <script>
+        // $("#reparticiones").on("change",function(){
+        //     var idReparticion = $(this).val();
+        //     $("#dependencias").html("");
+        //     $("#loaderB").html('<div class="theme-loader"><div class="loader-track"><div class="loader-bar"></div></div></div>');                        
+        //     $.ajax({
+        //         type: "POST",
+        //         url: "{{ path('app_reparticion_get_dependencia') }}",
+        //         data: {"idReparticion":idReparticion},
+        //         dataType: "Json",
+        //         success: function (response) {
+        //             console.log(response, idReparticion);
+        //             response.forEach(element => {
+        //                 $("#dependencias").append("<option value="+element.id+">"+element.nombre+"</option>")
+        //             });
+        //             $(".theme-loader").animate({
+        //                 opacity: "0"
+        //             },1000); 
+        //             $(".theme-loader").remove();    
+        //         }
+        //     });
+        // })
+    </script>
+    <script>
+
+        $(document).ready(function () {
+            $("select").select2({"theme":"classic"});
+            setTimeout(() => {
+                $(".select2-selection__arrow").css("min-height","35px");
+            }, 200);
+            
+            function ocultar() {
+                if ($("#agente_externo").val() == "1") {
+                    $("#col_reparticion").show("slow");
+                }
+                else {
+                    $("#col_reparticion").hide("slow");
+                }
+            }
+            ocultar();
+            $("#agente_externo").on("change", function () {
+                ocultar();                
+            }); 
+        });   
+    </script>
+    <script>
+        $('form[name="agente"]').on("submit",function(event){
+
+            var numeroDocumento = $("#agente_numeroDocumento").val()
+            var cuil = $("#agente_cuil").val()
+
+            if(!cuil.includes(numeroDocumento)) {
+            
+                event.preventDefault();
+                modalClear();
+                modalSetTitle("El campo CUIL y DNI deben ser coincidentes.");
+                modalAddContent("<div style='display:flex;flex-direction:column; align-items:center; justify-content:center;padding:10px;font-size:18px;'>"
+                +"<p>El campo CUIL y DNI deben ser coincidentes.</p></div>");
+                modalFadeIn();
+            }
+        });
+    </script>
+    <script>
+        $("#agente_Guardar").on("click",function(){
+             $("#loaderB").html('<div class="theme-loader"><div class="loader-track"><div class="loader-bar"></div></div></div>');
+             $(".theme-loader").animate({
+                        opacity: "0"
+                    },60000); 
+             
+        });
+    </script>
+    <script>
+        //Validacion DNI y CUIL
+        $('form[name="agente"]').on("submit", function (event) {
+
+            var numeroDocumento = $("#agente_numeroDocumento").val()
+            var cuil = $("#agente_cuil").val()
+
+            if (!cuil.includes(numeroDocumento)) {
+
+                event.preventDefault();
+                modalClear();
+                modalSetTitle("El campo CUIL y DNI deben ser coincidentes.");
+                modalAddContent("<div style='display:flex;flex-direction:column; align-items:center; justify-content:center;padding:10px;font-size:18px;'>"
+                    + "<p>El campo CUIL y DNI deben ser coincidentes.</p></div>");
+                modalFadeIn();
+            }
+        });
+    </script>
+
+
+{% endblock %}

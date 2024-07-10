@@ -1,0 +1,79 @@
+{# empty Twig template #}
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title%}SISTEMA DE VI&Aacute;TICOS DIGITALES{% endblock %}</title>
+         {% block stylesheets %}
+            <link rel="stylesheet" href="{{ asset('bower_components/bootstrap/css/bootstrap.min.css') }}" crossorigin="anonymous">
+            <link rel="stylesheet" href="{{ asset('materialize/assets/css/font-awesome.css') }}" crossorigin="anonymous">
+            <link rel="stylesheet" href="{{ asset('materialize/assets/css/form-elements.css') }}" crossorigin="anonymous">
+            <link rel="stylesheet" href="{{ asset('materialize/assets/css/materialize.css') }}" crossorigin="anonymous">
+            <link rel="stylesheet" href="{{ asset('materialize/assets/css/style.css') }}" crossorigin="anonymous">
+            <link rel="stylesheet" href="{{ asset('materialize/assets/css/prism.css') }}" crossorigin="anonymous">
+            <link rel="stylesheet" href="{{ asset('materialize/assets/css/page-center.css') }}" crossorigin="anonymous">
+            <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,100,300,500">
+            <link rel="shortcut icon" href="{{ asset('bundles/framework/images/favicon.ico') }}" />
+            <link rel="stylesheet" href="{{ asset('css/login.css') }}" />
+        {% endblock %}
+        
+
+    </head>
+
+    <body>
+        <div class="loginCard">
+            <div >
+                <div id="login-form-wrapper" class="col">
+                   <div id="logo">
+                     <img src="{{asset('images/logo_gba.svg')}}" alt="logo" >
+                     <label class="titleFont"><i>{% block tituloLogin %}SISTEMA DE VI&Aacute;TICOS DIGITALES {% endblock %}</i></label>
+                    </div>
+                        <div id="loginForm">
+                            <label><i>CONTRASEÑA OLVIDADA</i></label>
+                            {# <form method="post" action="{{path('')}}"> #}
+                                {% block main %}
+
+                                    {% if app.user %}
+                                        <div class="mb-3">
+                                            Iniciaste sesi&oacute;n como {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Cerrar Sesi&oacute;n</a>
+                                        </div>
+                                    {% endif %}
+                                    {{ form_start(form) }}
+
+                                    {{ form_end(form) }}
+
+                                    
+                                    {# <input type="email" name="email" id="inputEmail" class="form-control" autocomplete="email" placeholder="Ingrese su e-mail" required autofocus>
+                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" >
+
+                                    <button class="btn btn-lg btn-primary" type="submit">
+                                    Reestablecer contraseña
+                                    </button> #}
+                                    <a href="{{path('app_login')}}" class="leyendaLogin" ><b>Volver al login</b></a>
+
+                            {% endblock %}
+                            <p  class="leyendaLogin">
+                                <b>Dirección de Informática </b>
+                                <i>Jefatura de Asesores del Gobernador</i>
+                            </p>
+                            {# </form> #}
+                        </div>
+                </div>
+            </div>                
+        <footer>
+             {% block javascripts %}
+            <script src="{{ asset('materialize/assets/js/jquery-1.11.1.min.js') }}" crossorigin="anonymous"></script> 
+            <script src="{{ asset('bower_components/bootstrap/bootstrap.min.js') }}" crossorigin="anonymous"></script>
+            <script src="{{ asset('materialize/assets/js/jquery.backstretch.min.js') }}" crossorigin="anonymous"></script>
+            <script src="{{ asset('materialize/assets/js/scripts.js') }}" crossorigin="anonymous"></script>
+            <script src="{{ asset('materialize/assets/js/materialize.min.js') }}" crossorigin="anonymous"></script>
+
+            {% endblock %}
+        </footer>
+    </body>
+
+</html>

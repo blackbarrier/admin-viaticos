@@ -1,0 +1,4 @@
+<form method="post" action="{{ path('app_plantilla_delete', {'id': plantilla.id}) }}" onsubmit="return confirm('¿Está seguro que desea borrar el elemento?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ plantilla.id) }}">
+    <button class="btn btn-inverse btn-inverse-jag btn-outline-inverse" id="boton_BorrarPlantilla"style="font-size: 13px"><i class="ti-trash"></i>&nbsp;Borrar</button>
+</form>

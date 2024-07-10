@@ -1,0 +1,202 @@
+{% extends "base.html.twig"%}
+{% block title%}Viaticos Digitales - Inicio{% endblock %}
+{% block stylesheets %}
+    {{parent()}}
+
+    <style>
+    </style>
+{% endblock %}
+
+{% block body %}
+
+    <div class="card">
+        <div class="card-header"> 
+            <div class="row">
+                <div class="col-sm-10">
+                    <h3>Listado de Novedades</h3>
+                    <p class="text-muted h6 m-b-10 mt-3">Filtrar por mes y año para revisar novedades, movimientos y acciones a realizar</p>
+                </div>                
+            </div>
+        </div>
+        <br>
+        <div class="card-block">
+        {% if viaticos %}
+            <div class="row">
+                <div class="col-sm-6">
+                    <select class="form-control" id="mes" name="mes">
+                        {% set monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre",
+                        "Octubre", "Noviembre", "Diciembre"] %}
+                        {% set currentMonth = "now"|date("n") %}
+                        {% for i in 1..12 %}
+                            <option value="{{ i }}" {% if i==currentMonth %} selected{% endif %}>{{ monthNames[i - 1] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-sm-6">
+                    {% set currentMonth = "now"|date("m") %}                
+                    <select class="form-control" id="anio" name="anio">
+                        <option value="{{ 'now'|date('Y') }}" selected>{{ 'now'|date('Y') }}</option>
+                        {% if currentMonth == '12' %}
+                        {% set nextYear = 'now'|date('Y') + 1 %}
+                        <option value="{{nextYear}}">{{nextYear}}</option>
+                        {% endif %}
+                    </select>
+                </div>
+            </div>
+            <br>
+
+            <div class="row">
+                <div class="col-sm-12">
+                <table class="table table-hover" id="miTabla">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Fecha solicitud</th>    
+                            <th>Legajo</th>
+                            <th>Apellido y Nombre</th>
+                            <th>Mes y Año</th>
+                            <th>Importe</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for viatico in viaticos %}
+                        <tr>
+                            <td>{{viatico.id}}</td>
+                            <td>{{viatico.fechaPedido|date('Y/m/d H:i')}} hs</td>
+                            <td>{{viatico.agente.legajo}}</td>
+                            <td>{{viatico.agente.apellido|upper|raw}} {{viatico.agente.nombre|upper|raw}}</td>
+                            <td>{% if viatico.mes < 10 %}0{{viatico.mes}}{% else %}{{viatico.mes}}{% endif %}/{{viatico.anio}}</td>
+                            <td>$&nbsp;{{viatico.importe}}</td>
+                            <td><label class="label" style="background-color:#009aae">{{viatico.estado.nombre}}</label>
+                                {% if viatico.estado.short == "APROBADO" %}
+                                    <a href="{{path('app_calendario_rendicion_test',{'idViatico':viatico.id})}}">
+                                    <button class="btn btn-succes btn-outline-success" style="transform:scale(0.8)"><i class="fa-solid fa-money-bill-transfer"></i>&nbsp;Rendir</button>
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+                </div> 
+            </div>
+
+        {% else %}
+            <h4 style="color:#009aae; text-align:center">No se encontraron viáticos recientes</h4>
+        {% endif %}
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+    {{parent()}}
+    <script>       
+
+        $(document).ready(function () {
+           $('#miTabla').DataTable({
+                "order": [[ 0, 'desc' ]],
+                "border": "1px solid #222222",
+                "border-radius": "3px",
+                "paging": false,
+                "language": {
+                "sProcessing": "Procesando...",
+                "sLengthMenu": "Mostrar _MENU_ viáticos",
+                "sZeroRecords": "No se encontraron resultados",
+                "sEmptyTable": "Ningún dato disponible en esta tabla",
+                "sInfo": "Mostrando viáticos del _START_ al _END_ de un total de _TOTAL_ viáticos",
+                "sInfoEmpty": "Mostrando viáticos del 0 al 0 de un total de 0 viáticos",
+                "sInfoFiltered": "(filtrado de un total de _MAX_ viáticos)",
+                "sInfoPostFix": "",
+                "sSearch": "Buscar:",
+                "sUrl": "",
+                "sInfoThousands": ",",
+                "sLoadingRecords": "Cargando...",
+                "oPaginate": {
+                    "sFirst": "Primero",
+                    "sLast": "Último",
+                    "sNext": "Siguiente",
+                    "sPrevious": "Anterior"
+                },
+                "oAria": {
+                    "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                    "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                }
+            }
+        });
+
+        }, 500); 
+    </script>
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function () {
+                // Obtener referencias a los elementos select
+                var mesSelect = document.getElementById('mes');
+                var anioSelect = document.getElementById('anio');
+
+                // Obtener referencia a la tabla
+                var tabla = document.getElementById('miTabla');
+
+                // Agregar evento de cambio al select de mes
+                mesSelect.addEventListener('change', function () {
+                    filtrarTabla();
+                });
+
+                // Agregar evento de cambio al select de año
+                anioSelect.addEventListener('change', function () {
+                    filtrarTabla();
+                });
+
+                // Función para filtrar la tabla
+                function filtrarTabla() {
+
+                    var mesSeleccionado = mesSelect.value;
+                    if (mesSeleccionado<10){
+                        mesSeleccionado="0"+mesSeleccionado;
+                    }
+                    var anioSeleccionado = anioSelect.value;
+
+                    // console.log(mesSeleccionado)
+                    // console.log(anioSeleccionado)
+
+                    // Recorrer las filas de la tabla y ocultar aquellas que no coincidan con los filtros
+                    var filas = tabla.getElementsByTagName('tr');
+
+                    for (var i = 0; i < filas.length; i++) {
+                        var celdas = filas[i].getElementsByTagName('td');
+
+                        // Verificar si hay suficientes celdas en la fila antes de acceder a la cuarta celda (índice 3)
+                        if (celdas.length >= 4) {
+                            var mesAnio = celdas[4].textContent.trim(); // Obtener el texto de la celda Mes y Año
+                            console.log(mesAnio);
+                            console.log(mesSeleccionado + '/' + anioSeleccionado);
+
+
+                            // Comparar con los valores seleccionados y ocultar la fila si no coincide
+                            if (mesAnio !== mesSeleccionado + '/' + anioSeleccionado) {
+                                filas[i].style.display = 'none';
+
+                            } else {
+                                filas[i].style.display = ''; // Mostrar la fila si coincide
+                            }
+                        }
+                    }
+
+                }
+            });
+
+    
+    </script>
+
+{% endblock %}

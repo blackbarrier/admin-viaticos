@@ -1,0 +1,90 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Viáticos - Nuevo Usuario{% endblock %}
+{% block stylesheets %}
+    {{parent()}}
+    <style>
+        h4{
+            color:#009aae;
+            font-weight:bold;
+            padding:1em;
+        }
+        h4 > b {
+            color:royalblue;
+        }
+        .table{
+            width:fit-content;
+            min-width:800px;
+            max-width:80%;
+            margin: 0 auto;
+            box-shadow: 0px 3px 5px lightgray;
+            border-radius:8px;
+            margin-top:1em;
+            margin-bottom:1em;
+            padding:1em;            
+        }
+        .table tbody > tr > th{
+            background:royalblue;
+            color:white;
+            border:1px solid royalblue;
+        }
+        .table tbody > tr > td{
+            border:1px solid royalblue;
+          }
+    </style>
+{% endblock %}
+{% block body %}
+    <div class="card p-3">
+        <div class="card-header p-3">
+            <div class="row">
+                <div class="col-md-10">
+                    <h4><i class="fa-solid fa-user"></i>&nbsp;<b>Usuario</b></h4>
+                    <p class="text-muted h6 m-b-10 mt-3">Crear un nuevo usuario de la plataforma</p>
+                </div>
+                <div class="col">
+                    <a href="{{ path('app_usuario_index') }}"><button class="btn btn-inverse btn-inverse-jag btn-outline-inverse"><i class="ti-share"></i>&nbsp;Volver al listado</button></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-block">
+            <div class="row">
+                <div class="col" style="overflow:auto">
+                    {{ include('usuario/_form.html.twig') }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block javascripts %}
+{{parent()}}
+    <script>
+        // Select the last td element from the table
+        $('#usuario_dni').attr("type","number");
+        setTimeout(() => {
+            $("select").select2({theme: "classic"});
+        }, 500);
+         $('form[name="usuario"]').on("submit",function(event){
+             if($("#usuario_email").val() == "" || $("#usuario_password").val() == "" || $("#usuario_dni").val() == "" || $("#usuario_rol").val() == "" || $("#usuario_dependencia").val()  == "" || $("#usuario_genero").val() == "" || $("#usuario_reparticion").val() == "") {
+                event.preventDefault();
+                modalClear();
+                //console.log("email:'"+$("#usuario_email").val()+"'","contraseña:'"+$("#usuario_password").val()+"'","rol:'"+ $("#usuario_rol").val()+"'","dependencia:'"+$("#usuario_dependencia").val()+"'","genero:'"+$("#usuario_genero").val()+"'","reparticion:'"+ $("#usuario_reparticion").val()+"'");
+                modalSetTitle("Complete los campos obligatorios");
+                modalAddContent("<div style='display:flex;flex-direction:column; align-items:center; justify-content:center;padding:10px;font-size:18px;'>"
+                +"<p>Debe proporcionar al menos un <b>DNI</b>, un <b>Email</b>, una <b>Contraseña</b>, un <b>Género</b>, un <b>Rol</b>, una <b>Dependencia</b> y una <b>Reparticion</b> para continuar.</p></div>");
+                modalFadeIn();
+            }
+            var dni = $("#usuario_dni").val();
+            var cuil = $("usuario_cuil").val();
+            if(!cuil.includes(dni)){
+                event.preventDefault();
+                modalClear();
+                //console.log("email:'"+$("#usuario_email").val()+"'","contraseña:'"+$("#usuario_password").val()+"'","rol:'"+ $("#usuario_rol").val()+"'","dependencia:'"+$("#usuario_dependencia").val()+"'","genero:'"+$("#usuario_genero").val()+"'","reparticion:'"+ $("#usuario_reparticion").val()+"'");
+                modalSetTitle("Error");
+                modalAddContent("<div style='display:flex;flex-direction:column; align-items:center; justify-content:center;padding:10px;font-size:18px;'>"
+                +"<p>El npumero de <b>CUIL</b> debe contener el <b>DNI</b> ingresado</p></div>");
+                modalFadeIn();
+            }
+    });
+    </script>
+{% endblock %}

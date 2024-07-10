@@ -1,0 +1,133 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Dependencias Históricas - Ver detalles{%  endblock %}
+
+{% block stylehseets %}
+    {{ parent() }}
+{%  endblock %}
+
+{%  block body %}
+    <div class="card -p3">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-md-8">
+                    <h4>Visualizando los detalles de<br>
+                        "<b>{{ dependencia.nombre|raw }}</b>"</h4>
+                </div>
+                <div class="col" style="dislay:flex; flex-direction:column; justify-content:center; align-items:center;">
+                     <a href="{{ path('app_dependnecia_historica_index') }}">
+                         <button class="btn btn-inverse btn-inverse-jag btn-inverse-jag btn-outline-inverse">
+                             <i class="fa-solid fa-reply"></i>&nbsp;Volver al listado
+                         </button>
+                     </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-block">
+            <table class="table table-striped">
+                <tr>
+                    <th>Id Interno</th>
+                    <td>{{ dependencia.id }}</td>
+                </tr>
+                <tr>
+                    <th>Nombre</th>
+                    <td>{{ dependencia.nombre|raw }}</td>
+                </tr>
+                <tr>
+                    <th>Abreviatura</th>
+                    <td>{{ dependencia.abreviatura }}</td>
+                </tr>
+                <tr>
+                    <th>Dep. RENAPER ID</th>
+                    <td>{{ dependencia.dependenciaRenaperId }}</td>
+                </tr>
+                <tr>
+                    <th>Código GDEBA</th>
+                    <td>{{ dependencia.codigoGDEBA }}</td>
+                </tr>
+                <tr>
+                    <th>Tipo de Dependencia</th>
+                    <td>{{ dependencia.tipoDependenciaId }}</td>
+                </tr>
+                <tr>
+                    <th>Tipo de Delegación</th>
+                    <td>{{ dependencia.tipoDelegacion }}</td>
+                </tr>
+                <tr>
+                    <th>Descripción</th>
+                    <td>{{ dependencia.descripcion|raw }}</td>
+                </tr>
+                <tr>
+                    <th>Id de Partido</th>
+                    <td>{{ dependencia.partidoId }}</td>
+                </tr>
+                <tr>
+                    <th>Repartición</th>
+                    <td>{% if dependencia.reparticion %}
+                            {{ dependencia.reparticion.nombre|raw }}
+                        {% else %}
+                            -----
+                        {%  endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Estado Dependencia id</th>
+                    <td>{{ dependencia.estadoDependenciaId }}</td>
+                </tr>
+                <tr>
+                    <th>Dependencia de referencia</th>
+                    <td>{% if dependencia.dependenciaReferencia %}
+                            {{ dependencia.dependenciaReferencia.nombre|raw }}
+                        {% else %}
+                            <i class="fa-solid fa-circle-exclamation danger"></i>&nbsp; Sin dependencia de referencia
+                        {%  endif %}
+                    </td>
+                </tr>
+                 <tr>
+                    <th>Externa</th>
+                    <td>{% if dependencia.externa == 1 %}
+                            Si
+                        {% else %}
+                            No
+                        {%  endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Vigente desde y hasta</th>
+                    <td>de {{ dependencia.fechaVigenciaDesde|date("d/m/Y H:i") }}hs a {{ dependencia.fechaVigenciaHasta|date("d/m/Y H:i") }}hs</td>
+                </tr>
+                <tr>
+                    <th>Fecha de Carga</th>
+                    <td>{{ dependencia.fechaCarga|date("d/m/Y H:i") }} hs</td>
+                </tr>
+                <tr>
+                    <th>Usuario de Modificación</th>
+                    <td>{%  if usuarioCarga %}
+                            <table class="table table-striped">
+                                <tr>
+                                    <th>cuenta</th>
+                                    <td>{{ usuarioCarga.email }}</td>
+                                <tr>                                
+                                <tr>
+                                    <th>DNI</th>
+                                    <td>{{ usuarioCarga.dni}}</td>
+                                <tr>
+                                <tr>
+                                    <th>Nombre y Apellido</th>
+                                    <td>{{ usuarioCarga.nombre|raw }}&nbsp;{{ usuarioCarga.apellido }}</td>
+                                <tr>                      
+
+                            </table>
+                        {% else %}
+                               Error - no tiene usuario asociado
+                        {%  endif  %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+{%  endblock %}
+
+{%  block javascripts %}
+    {{ parent() }}
+{%  endblock %}

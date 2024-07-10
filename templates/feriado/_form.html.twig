@@ -1,0 +1,39 @@
+{{ form_start(form, {'attr': {'id': 'form-parametro', 'class': 'form-validate', 'novalidate': '' , 'autocomplete':'off'}}) }}
+{{ form_row(form._token) }}
+
+<div class="row p-3">
+    <div class="col-sm-4">
+        <div class="form-group" >
+            <label>Día:</label>
+            {{ form_widget(form.dia) }}
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label>Mes:</label>
+            {{ form_widget(form.mes) }}
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-group" >
+            <label>Año:</label><br>
+            {{ form_widget(form.anio) }}
+        </div>
+    </div>
+</div>
+<div class="row p-3" >
+    <div class="col-sm-12">
+        <div class="form-group" >
+            <label>Descripción:</label><br>
+            {{ form_widget(form.descripcion) }}
+        </div>
+    </div>
+</div>
+<div class="row text-center">
+    <div class="col-sm-6 col-md-4 col-lg-2 mb-3">
+        <button type="submit" class="btn btn-inverse btn-inverse-jag btn-outline-inverse">
+            <i class="ti-save"></i> Guardar</button>
+    </div>
+</div>
+</div>
+{{ form_end(form) }}

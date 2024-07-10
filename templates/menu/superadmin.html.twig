@@ -1,0 +1,59 @@
+<div class="pcoded-navigation-label">Super admin</div>
+<ul class="pcoded-item pcoded-left-item">
+      <li class="pcoded-hasmenu">
+        <a href="javascript:void(0)">
+            <span class="pcoded-micon"><i class="fa-solid fa-user-gear"></i><b>Usuarios</b></span>
+            <span class="pcoded-mtext">Usuarios</span>
+            <span class="pcoded-mcaret"></span>
+        </a>
+        <ul class="pcoded-submenu">
+                <li class=" ">
+                <a href="{{path('app_usuario_index')}}">
+                    <i class="fa-solid fa-users-viewfinder"></i> &nbsp;Ver Listado
+                    <span class="pcoded-mcaret"></span>
+                </a>
+            </li>
+            <li class=" ">
+                <a href="{{path('app_usuario_new')}}"><i class="fa-solid fa-user-plus"></i>&nbsp;&nbsp Nuevo Usuario
+                    <span class="pcoded-mcaret"></span>
+                </a>
+            </li>                   
+        </ul>
+    </li>  
+    <li class="pcoded-hasmenu">
+        <a href="{{ path('app_configuracion_index')}}">
+            <span class="pcoded-micon"><i class="fa-solid fa-gear"></i></span>
+            <span class="pcoded-mtext">Configuración</span>
+            <span class="pcoded-mcaret"></span>
+        </a>
+    </li>
+    <li class="">
+        <a href="{{ path('app_feriado_obtener_todos')}}">
+            <span class="pcoded-micon"><i class="ti-calendar"></i></span>
+            <span class="pcoded-mtext">Feriados</span>
+            <span class="pcoded-mcaret"></span>
+        </a>
+    </li> 
+    <li class="">
+        <a href="{{ path('app_info_reparticion_index')}}">
+            <span class="pcoded-micon"><i class="fa fa-institution"></i></span>
+            <span class="pcoded-mtext">Reparticiones</span>
+            <span class="pcoded-mcaret"></span>
+        </a>
+    </li> 
+    <li class="">
+        <a href="{{ path('app_dependnecia_historica_index')}}">
+            <span class="pcoded-micon"><i class="fa-solid fa-timeline" style="font-size:10px"></i><i class="fa-solid fa-file-waveform" style="font-size:7px;color:#009aae;"></i></span>
+            <span class="pcoded-mtext">Dep. Históricas</span>
+            <span class="pcoded-mcaret"></span>
+        </a>
+    </li> 
+    <li class="">
+        <a href="#">
+            <span class="pcoded-micon"><i class="fa fa-institution" style="font-size:10px"></i><i class="fa-solid fa-file-waveform" style="font-size:7px;color:#009aae;"></i></span>
+            <span class="pcoded-mtext">Rep. Históricas</span>
+            <span class="pcoded-mcaret"></span>
+        </a>
+    </li> 
+       
+</ul>

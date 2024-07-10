@@ -1,0 +1,120 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}InfoDependencia{% endblock %}
+
+{% block body %}
+
+    <div id="loaderB"></div>
+    <div class="card" style="overflow:auto">
+    
+        <div class="card-header">
+            <div class="row">
+
+                <div class="col-sm-8">
+                    <h3><i class="fa fa-institution"></i>&nbsp; <b>Ver dependencia</b></h3>
+                    <p class="text-muted h6 m-b-10 mt-3">Se muestran todos los datos de la dependencia seleccionada.</p>
+                </div>
+                
+                <div class="col-sm-2">
+                    <a href="{{ path('app_admin_dependencias_edit', {'id': info_dependencium.id}) }}">
+                        <button class="btn btn-inverse btn-inverse-jag btn-inverse-jag btn-outline-inverse" style="width: 100%;">
+                            <i class="ti-pencil"></i>&nbsp;Editar</button></a>                            
+                </div>
+                
+                <div class="col-sm-2">
+                    <a href="{{path('app_admin_dependencias_index')}}">
+                        <button class="btn btn-inverse btn-inverse-jag btn-inverse-jag btn-outline-inverse" style="width: 100%;">
+                            <i class="ti-back-left"></i>&nbsp;Volver</button></a>
+                </div>
+
+    
+            </div>
+        </div>
+    
+        <br>
+        <div class="card-block">
+    
+            <h1>InfoDependencia</h1>
+            
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <th>Id</th>
+                        <td>{{ info_dependencium.id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Nombre</th>
+                        <td>{{ info_dependencium.nombre }}</td>
+                    </tr>
+                    <tr>
+                        <th>Abreviatura</th>
+                        <td>{{ info_dependencium.abreviatura }}</td>
+                    </tr>
+                    {# <tr>
+                        <th>DependenciaRenaperId</th>
+                        <td>{{ info_dependencium.dependenciaRenaperId }}</td>
+                    </tr> #}
+                    <tr>
+                        <th>Codigo GDEBA</th>
+                        <td>{{ info_dependencium.codigoGdeba }}</td>
+                    </tr>
+                    {# <tr>
+                        <th>TipoDependenciaId</th>
+                        <td>{{ info_dependencium.tipoDependenciaId }}</td>
+                    </tr> #}
+                    {# <tr>
+                        <th>TipoDelegacion</th>
+                        <td>{{ info_dependencium.tipoDelegacion }}</td>
+                    </tr> #}
+                    <tr>
+                        <th>Descripción</th>
+                        <td>{{ info_dependencium.descripcion }}</td>
+                    </tr>
+                    {# <tr>
+                        <th>Clase</th>
+                        <td>{{ info_dependencium.clase }}</td>
+                    </tr> #}
+                    {# <tr>
+                        <th>PartidoId</th>
+                        <td>{{ info_dependencium.partidoId }}</td>
+                    </tr> #}
+                    <tr>
+                        <th>Fecha vigencia desde</th>
+                        <td>{{ info_dependencium.fechaVigenciaDesde ? info_dependencium.fechaVigenciaDesde|date('Y-m-d') : '' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Fecha vigencia hasta</th>
+                        <td>{{ info_dependencium.fechaVigenciaHasta ? info_dependencium.fechaVigenciaHasta|date('Y-m-d') : '' }}
+                        </td>
+                    </tr>
+                    {# <tr>
+                        <th>FechaCarga</th>
+                        <td>{{ info_dependencium.fechaCarga ? info_dependencium.fechaCarga|date('Y-m-d H:i:s') : '' }}</td>
+                    </tr>
+                    <tr>
+                        <th>UsuarioId</th>
+                        <td>{{ info_dependencium.usuarioId }}</td>
+                    </tr>
+                    <tr>
+                        <th>EstadoDependenciaId</th>
+                        <td>{{ info_dependencium.estadoDependenciaId }}</td>
+                    </tr>
+                    <tr>
+                        <th>Externa</th>
+                        <td>{{ info_dependencium.externa ? 'Yes' : 'No' }}</td>
+                    </tr> #}
+                </tbody>
+            </table>
+            
+            {# <a href="{{ path('app_admin_dependencias_index') }}">Volver</a> #}
+            
+            
+            
+            {# {{ include('admin_dependencias/_delete_form.html.twig') }} #}
+    
+    
+    
+        </div>
+    
+{% endblock %}
